@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:student_names/instructor_home.dart';
 import 'package:student_names/student_home.dart';
+import 'package:student_names/login_home.dart';
 
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -37,7 +38,7 @@ class _SilentLogInState extends State<SilentLogIn> {
         Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new LoginPage()));
       }
       else{
-        Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new InstructorHome()));
+        Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new LoginHome()));
       }
     });
   }
@@ -113,10 +114,11 @@ class _LoginPageState extends State<LoginPage> {
       idToken: googleAuth.idToken,
     );
     final FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
+    print(user);
     if(user != null){
-      // If user is an instructor pushRepacement InstructorHome()
+      // If user is an instructor pushReplacement InstructorHome()
       // Else pushReplacement StudentHome()
-      Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new InstructorHome()));
+      Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new LoginHome()));
     }
     print("signed in " + user.displayName);
   }
