@@ -1,6 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:student_names/instructor_home.dart';
 import 'package:student_names/student_home.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:student_names/login.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+//Alert button: https://stackoverflow.com/questions/53844052/how-to-make-an-alertdialog-in-flutter
+
+Future<String> getUID() async {
+  FirebaseUser user = await FirebaseAuth.instance.currentUser();
+  return user.uid;
+}
 
 /*
  * Choose to login as instructor or student.
@@ -11,12 +22,76 @@ class LoginHome extends StatefulWidget {
 }
 
 class _LoginHomeState extends State<LoginHome> {
+  TextEditingController newName = new TextEditingController();
+  String id;
+  String name = "First Last";
+  var snapShot;
+
+  /*
+   * Creates a new document with the default name if it doesn't already exist in the database
+   */
+  void _checkUserName() async {
+    print('checking username');
+    String id = await getUID();
+    print(id);
+    snapShot = Firestore.instance
+        .collection('names')
+        .document(id);
+    final snapShotCheck = await snapShot.get();
+
+    if (snapShotCheck == null || !snapShotCheck.exists) {
+      // If current doc doesn't exist, make one for the user
+      // go to a page maybe named "New User" to change the name.
+      snapShot.setData({'name':'$name'});
+      print(id);
+    }
+  }
+
+  showChangeNameDialog(BuildContext context) {
+    // set up the button
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        name = newName.text;
+        print(name);
+        snapShot.setData({'name':'$name'});
+        Navigator.of(context).pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Set your name"),
+      content: TextField(
+        autofocus: true,
+        controller: newName,
+      ),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    _checkUserName();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
           centerTitle: true,
-          title: Center(child: const Text('Login as...')),
+          title: Center(child: Text('Welcome, $name')),
           leading: new IconButton(
             icon: new Icon(Icons.sentiment_neutral, color: Colors.white), //This is just here to help center title...
             onPressed: null,
@@ -24,28 +99,28 @@ class _LoginHomeState extends State<LoginHome> {
           actions: <Widget>[
             IconButton(
               icon: Icon(
-                Icons.settings,
+                Icons.settings, //Change name to be identified as
               ),
-              onPressed: null,
+              onPressed: () {
+                showChangeNameDialog(context);
+                print(name);
+                setState((){});
+              },
             )
           ]
       ),
       body: Padding(
         padding: EdgeInsets.all(50.0),
-        child: Center(child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Center(child: ListView(
           children: <Widget>[
-            Spacer(),
             Padding(
-              padding: const EdgeInsets.all(5.0),
+              padding: const EdgeInsets.all(25.0),
               child: Image(
                 image: NetworkImage('https://img.freepik.com/free-vector/man-woman-symbol_77417-537.jpg?size=626&ext=jpg'), //Placeholder, maybe actually have a logo or something here after
               ),
             ),
-            Spacer(),
             Padding(
-              padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+              padding: const EdgeInsets.only(top: 25.0, bottom: 10.0, left: 10.0, right: 10.0),
               child: ButtonTheme(
                 height: MediaQuery.of(context).size.height/20,
                 child: RaisedButton(
@@ -58,7 +133,7 @@ class _LoginHomeState extends State<LoginHome> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+              padding: const EdgeInsets.only(top: 10.0, bottom: 25.0, left: 10.0, right: 10.0),
               child: ButtonTheme(
                 height: MediaQuery.of(context).size.height/20,
                 child: RaisedButton(
@@ -70,7 +145,6 @@ class _LoginHomeState extends State<LoginHome> {
                 ),
               ),
             ),
-            Spacer(),
           ],
         )),
       ),

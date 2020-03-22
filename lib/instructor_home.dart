@@ -21,7 +21,7 @@ class _InstructorHomeState extends State<InstructorHome> {
               icon: Icon(
                 Icons.settings,
               ),
-              onPressed: null,
+              onPressed: null, //Add course, remove course
             )
           ]),
       body: Padding(
