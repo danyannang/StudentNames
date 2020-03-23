@@ -34,6 +34,8 @@ class _SilentLogInState extends State<SilentLogIn> {
       print('$e');
       Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new LoginPage()));
     }).then((val){
+      print("Printing val below:");
+      print(val);
       if(val == null){
         Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new LoginPage()));
       }
@@ -82,11 +84,11 @@ class _LoginPageState extends State<LoginPage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              Colors.red[500],
-              Colors.red[700],
+              Colors.green[500],
+              Colors.blue[900],
             ],
-            begin: const FractionalOffset(0.75, 1.0),
-            end: const FractionalOffset(1.0, 0.75),
+            begin: const Alignment(0.5, 0.5),
+            end: const Alignment(1, -1),
           )
         ),
         child: Column(

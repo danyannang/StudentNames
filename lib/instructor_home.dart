@@ -23,27 +23,28 @@ class _InstructorHomeState extends State<InstructorHome> {
               ),
               onPressed: null, //Add course, remove course
             )
-          ]),
+          ]
+        ),
       body: Padding(
         padding: EdgeInsets.all(15.0),
         child: Center(
             child: ListView(
-          children: <Widget>[
-            ButtonTheme(
-              height: 50,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: RaisedButton(
-                    elevation: 25,
-                    onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => InstructorCourseHome())),
-                    child: Text(
-                      'Course 1',
-                    )),
-              ),
-            ),
+              children: <Widget>[
+                ButtonTheme(
+                  height: 50,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RaisedButton(
+                        elevation: 25,
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => InstructorCourseHome())),
+                        child: Text(
+                          'Course 1',
+                        )),
+                  ),
+                ),
             ButtonTheme(
               height: 50,
               child: Padding(

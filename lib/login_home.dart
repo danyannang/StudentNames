@@ -1,16 +1,23 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:student_names/instructor_home.dart';
 import 'package:student_names/student_home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:student_names/login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+
 //Alert button: https://stackoverflow.com/questions/53844052/how-to-make-an-alertdialog-in-flutter
 
 Future<String> getUID() async {
   FirebaseUser user = await FirebaseAuth.instance.currentUser();
   return user.uid;
+}
+
+Future<String> getName() async{
+  GoogleSignIn gsi;
+  return gsi.currentUser.displayName;
 }
 
 /*
@@ -24,7 +31,7 @@ class LoginHome extends StatefulWidget {
 class _LoginHomeState extends State<LoginHome> {
   TextEditingController newName = new TextEditingController();
   String id;
-  String name = "First Last";
+  String name = "";
   var snapShot;
 
   /*
@@ -34,6 +41,10 @@ class _LoginHomeState extends State<LoginHome> {
     print('checking username');
     String id = await getUID();
     print(id);
+    print("UID");
+    print("Printing name");
+    name = await getName();
+    print("NAME");
     snapShot = Firestore.instance
         .collection('names')
         .document(id);
@@ -42,7 +53,7 @@ class _LoginHomeState extends State<LoginHome> {
     if (snapShotCheck == null || !snapShotCheck.exists) {
       // If current doc doesn't exist, make one for the user
       // go to a page maybe named "New User" to change the name.
-      snapShot.setData({'name':'$name'});
+      snapShot.setData({'name':'$name'}, merge: true);
       print(id);
     }
   }
@@ -122,26 +133,34 @@ class _LoginHomeState extends State<LoginHome> {
             Padding(
               padding: const EdgeInsets.only(top: 25.0, bottom: 10.0, left: 10.0, right: 10.0),
               child: ButtonTheme(
-                height: MediaQuery.of(context).size.height/20,
+                height: 50,
                 child: RaisedButton(
-                    elevation: 25,
-                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorHome())),
-                    child: Text(
-                  'Instructor',
-                )
+                  elevation: 25,
+                  onPressed: () {
+                    Firestore.instance.collection('names').document(id).setData({'Type' : 'Instructor'}, merge: true);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorHome()));
+                  },
+                  child: Text(
+                    'Instructor',
+                    style: TextStyle(fontSize: 25),
+                  )
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 10.0, bottom: 25.0, left: 10.0, right: 10.0),
+              padding: const EdgeInsets.only(top: 50.0, bottom: 25.0, left: 10.0, right: 10.0),
               child: ButtonTheme(
-                height: MediaQuery.of(context).size.height/20,
+                height: 50,
                 child: RaisedButton(
-                    elevation: 25,
-                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => StudentHome())),
-                    child: Text(
-                  'Student',
-                )
+                  elevation: 25,
+                  onPressed: () {
+                    Firestore.instance.collection('names').document(id).setData({'Type' : 'Student'}, merge: true);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => StudentHome()));
+                  },
+                  child: Text(
+                    'Student',
+                    style: TextStyle(fontSize: 25),
+                  )
                 ),
               ),
             ),
