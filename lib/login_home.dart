@@ -10,14 +10,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 //Alert button: https://stackoverflow.com/questions/53844052/how-to-make-an-alertdialog-in-flutter
 
+
 Future<String> getUID() async {
   FirebaseUser user = await FirebaseAuth.instance.currentUser();
   return user.uid;
 }
 
-Future<String> getName() async{
-  GoogleSignIn gsi;
-  return gsi.currentUser.displayName;
+Future<String> getName(id) async {
+  DocumentSnapshot ds = await Firestore.instance.collection('names').document(id).get();
+  return ds.data['name'];
 }
 
 /*
@@ -29,9 +30,9 @@ class LoginHome extends StatefulWidget {
 }
 
 class _LoginHomeState extends State<LoginHome> {
-  TextEditingController newName = new TextEditingController();
+  String name = "First Last";
   String id;
-  String name = "";
+  TextEditingController newName = new TextEditingController();
   var snapShot;
 
   /*
@@ -55,6 +56,13 @@ class _LoginHomeState extends State<LoginHome> {
       // go to a page maybe named "New User" to change the name.
       snapShot.setData({'name':'$name'}, merge: true);
       print(id);
+    }
+    else {
+      name = await snapShot.get().then((DocumentSnapshot ds) {
+        return ds.data['name'];
+      });
+      print(name);
+      setState((){});
     }
   }
 
