@@ -44,7 +44,7 @@ class _LoginHomeState extends State<LoginHome> {
     print(id);
     print("UID");
     print("Printing name");
-    name = await getName();
+    name = await getName(id);
     print("NAME");
     snapShot = Firestore.instance
         .collection('names')
