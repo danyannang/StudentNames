@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
 
 /*
  * Home page for the students.
@@ -15,13 +16,16 @@ class StudentHome extends StatefulWidget {
 }
 
 class _StudentHomeState extends State<StudentHome> {
-  File picture;
   String name = "";
+  String uid;
+  dynamic pictureUrl;
+
 
   @override
   void initState(){
     super.initState();
     getName();
+    getPicture();
   }
 
   @override
@@ -50,7 +54,12 @@ class _StudentHomeState extends State<StudentHome> {
           SpeedDialChild(
             label: "Choose A Picture",
             child: Icon(Icons.camera_roll),
-            onTap: () => getImage(),
+            onTap: () => chooseImage(),
+          ),
+          SpeedDialChild(
+            label: "print uid",
+            child: Icon(Icons.camera_roll),
+            onTap: () => getPicture()
           )
         ],
       ),
@@ -60,8 +69,8 @@ class _StudentHomeState extends State<StudentHome> {
             SizedBox(height: 20),
             Container(
               height: 250,
-              child: picture == null ? Placeholder(color: Colors.blue,) : 
-                Image.file(picture),
+              child: pictureUrl == null ? Placeholder(color: Colors.blue,) : Image.network(pictureUrl),
+              // child: Image.network(pictureUrl),
             ),
             SizedBox(height: 20),
             name == "" ? CircularProgressIndicator() :
@@ -73,24 +82,58 @@ class _StudentHomeState extends State<StudentHome> {
   }
   Future takeImage() async{
     var image = await ImagePicker.pickImage(source: ImageSource.camera);
-    setState(() {
-      picture = image;
+    StorageReference storageReference = FirebaseStorage.instance.ref().child(uid);    
+    StorageUploadTask uploadTask = storageReference.putFile(image);    
+    await uploadTask.onComplete;    
+    await storageReference.getDownloadURL().then((fileURL) {    
+      Firestore.instance.collection('/names').document(uid).setData({"Pic" : fileURL}, merge: true);
+    }).then((_){
+      getPicture();
     });
   }
 
-  Future getImage() async{
+  Future chooseImage() async{
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      picture = image;
+    StorageReference storageReference = FirebaseStorage.instance.ref().child(uid);    
+    StorageUploadTask uploadTask = storageReference.putFile(image);    
+    await uploadTask.onComplete;    
+    await storageReference.getDownloadURL().then((fileURL) {    
+      Firestore.instance.collection('/names').document(uid).setData({"Pic" : fileURL}, merge: true);
+    }).then((_){
+      getPicture();
     });
   }
 
   getName() async{
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    var id = user.uid;
-    DocumentSnapshot doc = await Firestore.instance.collection('names').document(id).get();
+    uid = user.uid;
+    DocumentSnapshot doc = await Firestore.instance.collection('names').document(uid).get();
     setState(() {
       name = doc.data['name'];
+    });
+  }
+
+  getStockPic() async{
+    await FirebaseAuth.instance.currentUser().then((user){
+      pictureUrl = user.photoUrl;
+      print(pictureUrl);
+      setState(() {
+      });
+    });
+  }
+
+  getPicture() async{
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    uid = user.uid;
+    await Firestore.instance.collection('/names').document(uid).get().then((data){
+      if(data.data.containsKey('Pic')){
+        pictureUrl = data.data['Pic'];
+        setState(() {
+        });
+      }
+      else{
+        getStockPic();
+      }
     });
   }
 }

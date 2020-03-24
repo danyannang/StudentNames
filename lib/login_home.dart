@@ -17,8 +17,8 @@ Future<String> getUID() async {
 }
 
 Future<String> getName(id) async {
-  DocumentSnapshot ds = await Firestore.instance.collection('names').document(id).get();
-  return ds.data['name'];
+  FirebaseUser user = await FirebaseAuth.instance.currentUser();
+  return user.displayName;
 }
 
 /*
@@ -30,7 +30,7 @@ class LoginHome extends StatefulWidget {
 }
 
 class _LoginHomeState extends State<LoginHome> {
-  String name = "First Last";
+  String name = "";
   String id;
   TextEditingController newName = new TextEditingController();
   var snapShot;
@@ -40,7 +40,7 @@ class _LoginHomeState extends State<LoginHome> {
    */
   void _checkUserName() async {
     print('checking username');
-    String id = await getUID();
+    id = await getUID();
     print(id);
     print("UID");
     print("Printing name");
@@ -58,11 +58,11 @@ class _LoginHomeState extends State<LoginHome> {
       print(id);
     }
     else {
-      name = await snapShot.get().then((DocumentSnapshot ds) {
-        return ds.data['name'];
-      });
-      print(name);
-      setState((){});
+      // name = await snapShot.get().then((DocumentSnapshot ds) {
+        // return ds.data['name'];
+      // });
+      // print(name);
+      // setState((){});
     }
   }
 
@@ -145,6 +145,7 @@ class _LoginHomeState extends State<LoginHome> {
                 child: RaisedButton(
                   elevation: 25,
                   onPressed: () {
+                    print("Printing ID: $id");
                     Firestore.instance.collection('names').document(id).setData({'Type' : 'Instructor'}, merge: true);
                     Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorHome()));
                   },
