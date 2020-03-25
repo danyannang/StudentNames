@@ -39,13 +39,9 @@ class _LoginHomeState extends State<LoginHome> {
    * Creates a new document with the default name if it doesn't already exist in the database
    */
   void _checkUserName() async {
-    print('checking username');
     id = await getUID();
     print(id);
-    print("UID");
-    print("Printing name");
     name = await getName(id);
-    print("NAME");
     snapShot = Firestore.instance
         .collection('names')
         .document(id);

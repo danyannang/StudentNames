@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:student_names/instructor_home.dart';
 import 'package:student_names/student_home.dart';
 import 'package:student_names/login_home.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -30,17 +31,14 @@ class _SilentLogInState extends State<SilentLogIn> {
       ]
     );
     _googleSignIn.signInSilently(suppressErrors: true).catchError((dynamic e){
-      print("Printing error below:");
       print('$e');
       Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new LoginPage()));
     }).then((val){
-      print("Printing val below:");
-      print(val);
       if(val == null){
         Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new LoginPage()));
       }
       else{
-        Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new LoginHome()));
+        _goToNextPage();
       }
     });
   }
@@ -50,6 +48,19 @@ class _SilentLogInState extends State<SilentLogIn> {
     return Center(
       child: CircularProgressIndicator(),
     );
+  }
+
+  _goToNextPage() async{
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    String uid = user.uid;
+    await Firestore.instance.collection('/names').document(uid).get().then((data){
+      if(data.data['Type'] == 'Student'){
+        Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new StudentHome()));
+      }
+      else{
+        Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new InstructorHome()));
+      }
+    });
   }
 }
 
@@ -116,12 +127,10 @@ class _LoginPageState extends State<LoginPage> {
       idToken: googleAuth.idToken,
     );
     final FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
-    print(user);
     if(user != null){
       // If user is an instructor pushReplacement InstructorHome()
       // Else pushReplacement StudentHome()
       Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new LoginHome()));
     }
-    print("signed in " + user.displayName);
   }
 }
