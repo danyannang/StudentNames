@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:uuid/uuid.dart';
 
 // https://stackoverflow.com/questions/50759555/check-image-is-loaded-in-image-network-widget-in-flutter
 
@@ -21,6 +19,8 @@ class _StudentHomeState extends State<StudentHome> {
   String name = "";
   String uid;
   dynamic pictureUrl;
+  Firestore db = Firestore.instance;
+  List<String> classes = new List<String>();
 
 
   @override
@@ -35,13 +35,21 @@ class _StudentHomeState extends State<StudentHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: Center(child: const Text('Home')),
+        title: name == "" ? CircularProgressIndicator() : Text(name, style: TextStyle(fontSize: 25)),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () => _addOrRemoveClassDialog(),
-          ),
+          PopupMenuButton<String>(
+            onSelected: (res) => _addOrRemoveClassDialog(res),
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              PopupMenuItem<String>(
+                child: Text("Add A New Class"),
+                value: "Add"
+              ),
+              PopupMenuItem<String>(
+                child: Text("Remove A Class"),
+                value: "Remove"
+              ),
+            ],
+          )
         ]
       ),
       floatingActionButton: SpeedDial(
@@ -59,36 +67,78 @@ class _StudentHomeState extends State<StudentHome> {
           ),
         ],
       ),
-      body: Center(
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.green[500],
+              Colors.blue[900],
+            ],
+            begin: const Alignment(0.5, 0.5),
+            end: const Alignment(1, -1),
+          )
+        ),
         child: Column(
-          children: <Widget>[
-            SizedBox(height: 20),
-            Container(
-              height: 250,
-              child: pictureUrl == null ? Placeholder(color: Colors.blue,) : Image.network(pictureUrl,
-                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent chunk){
-                  if(chunk == null){
-                    return child;
-                  }
-                  else{
-                    return Center(
-                      child: CircularProgressIndicator(
-                      value: chunk.expectedTotalBytes != null ? chunk.cumulativeBytesLoaded / chunk.expectedTotalBytes : null,
-                    ));
-                  }
-                },),
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          SizedBox(width: 10),
+          Container(
+            height: MediaQuery.of(context).size.height/2-75,
+            child: pictureUrl == null ? Placeholder(color: Colors.blue,) : Image.network(pictureUrl,
+              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent chunk){
+                if(chunk == null){
+                  return child;
+                }
+                else{
+                  return Center(
+                    child: CircularProgressIndicator(
+                    value: chunk.expectedTotalBytes != null ? chunk.cumulativeBytesLoaded / chunk.expectedTotalBytes : null,
+                  ));
+                }
+              },
             ),
-            SizedBox(height: 20),
-            name == "" ? CircularProgressIndicator() :
-              Text(name, style: TextStyle(fontSize: 30)),
-            SizedBox(height: 20),
-            // ListView.builder(
-            //   itemCount: ,
-            //   itemBuilder: null,
-            // ),
-          ],
-        )
-      ),
+          ),
+          SizedBox(height: 20),
+          Container(
+            height: MediaQuery.of(context).size.height/2-50,
+            child: StreamBuilder<QuerySnapshot>(
+              stream: db.collection('/names').document(uid).collection('Classes').snapshots(),
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snap){
+                if(snap.hasData){
+                  classes.clear();
+                  snap.data.documents.forEach((data){
+                    classes.add(data.documentID);
+                  });
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: classes.length,
+                    itemBuilder: (BuildContext context, int index){
+                      return new Card(
+                        color: Colors.transparent.withAlpha(10),
+                        child: Column(
+                            children: <Widget>[
+                              ListTile(
+                                title: Text(classes[index], style: TextStyle(fontSize: 20)),
+                              ),
+                            ]
+                        )
+                      );
+                    }
+                  );
+                }
+                else{
+                  return Center(
+                    child: CircularProgressIndicator()
+                  );
+                }
+              },
+            ),
+          )
+        ],
+      )
+      )
     );
   }
   Future takeImage() async{
@@ -97,7 +147,7 @@ class _StudentHomeState extends State<StudentHome> {
     StorageUploadTask uploadTask = storageReference.putFile(image);    
     await uploadTask.onComplete;    
     await storageReference.getDownloadURL().then((fileURL) {    
-      Firestore.instance.collection('/names').document(uid).setData({"Pic" : fileURL}, merge: true);
+      db.collection('/names').document(uid).setData({"Pic" : fileURL}, merge: true);
     }).then((_){
       getPicture();
     });
@@ -109,7 +159,7 @@ class _StudentHomeState extends State<StudentHome> {
     StorageUploadTask uploadTask = storageReference.putFile(image);    
     await uploadTask.onComplete;    
     await storageReference.getDownloadURL().then((fileURL) {    
-      Firestore.instance.collection('/names').document(uid).setData({"Pic" : fileURL}, merge: true);
+      db.collection('/names').document(uid).setData({"Pic" : fileURL}, merge: true);
     }).then((_){
       getPicture();
     });
@@ -118,7 +168,7 @@ class _StudentHomeState extends State<StudentHome> {
   getName() async{
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     uid = user.uid;
-    DocumentSnapshot doc = await Firestore.instance.collection('names').document(uid).get();
+    DocumentSnapshot doc = await db.collection('names').document(uid).get();
     setState(() {
       name = doc.data['name'];
     });
@@ -136,7 +186,7 @@ class _StudentHomeState extends State<StudentHome> {
   getPicture() async{
     FirebaseUser user = await FirebaseAuth.instance.currentUser();
     uid = user.uid;
-    await Firestore.instance.collection('/names').document(uid).get().then((data){
+    await db.collection('/names').document(uid).get().then((data){
       if(data.data.containsKey('Pic')){
         pictureUrl = data.data['Pic'];
         setState(() {
@@ -152,7 +202,36 @@ class _StudentHomeState extends State<StudentHome> {
 
   }
 
-  _addOrRemoveClassDialog() async{
-    print("_addOrRemoveClassDialog needs to be implemented.");
+  _addOrRemoveClassDialog(String action) async{
+    TextEditingController codeCont;
+    if(action == "Add"){
+      showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return SimpleDialog(
+            title: Text("Enter The Code Of The Class", style: TextStyle(fontSize: 20)),
+            children: <Widget>[
+              TextField(
+                controller: codeCont,
+                decoration: InputDecoration(hintText: "Code", prefixIcon: Icon(Icons.code)),
+                // onEditingComplete: () async{
+                //   print(codeCont.text);
+                //   await db.collection('/names').document(uid).collection('Classes').document(codeCont.text).setData({});
+                //   Navigator.pop(context);
+                // },
+                onSubmitted: (code) async{
+                  await db.collection('/names').document(uid).collection('Classes').document(code).setData({});
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        }
+      );
+    }
+  }
+
+  classExists() async{
+
   }
 }

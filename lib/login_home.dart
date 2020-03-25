@@ -1,10 +1,7 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:student_names/instructor_home.dart';
 import 'package:student_names/student_home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:student_names/login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
