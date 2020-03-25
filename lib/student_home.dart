@@ -21,6 +21,8 @@ class _StudentHomeState extends State<StudentHome> {
   dynamic pictureUrl;
   Firestore db = Firestore.instance;
   List<String> classes = new List<String>();
+  bool snack = false;
+  final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
 
   @override
@@ -34,6 +36,7 @@ class _StudentHomeState extends State<StudentHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldKey,
       appBar: AppBar(
         title: name == "" ? CircularProgressIndicator() : Text(name, style: TextStyle(fontSize: 25)),
         actions: <Widget>[
@@ -81,63 +84,63 @@ class _StudentHomeState extends State<StudentHome> {
           )
         ),
         child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          SizedBox(width: 10),
-          Container(
-            height: MediaQuery.of(context).size.height/2-75,
-            child: pictureUrl == null ? Placeholder(color: Colors.blue,) : Image.network(pictureUrl,
-              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent chunk){
-                if(chunk == null){
-                  return child;
-                }
-                else{
-                  return Center(
-                    child: CircularProgressIndicator(
-                    value: chunk.expectedTotalBytes != null ? chunk.cumulativeBytesLoaded / chunk.expectedTotalBytes : null,
-                  ));
-                }
-              },
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(width: 10),
+            Container(
+              height: MediaQuery.of(context).size.height/2-75,
+              child: pictureUrl == null ? Placeholder(color: Colors.blue,) : Image.network(pictureUrl,
+                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent chunk){
+                  if(chunk == null){
+                    return child;
+                  }
+                  else{
+                    return Center(
+                      child: CircularProgressIndicator(
+                      value: chunk.expectedTotalBytes != null ? chunk.cumulativeBytesLoaded / chunk.expectedTotalBytes : null,
+                    ));
+                  }
+                },
+              ),
             ),
-          ),
-          SizedBox(height: 20),
-          Container(
-            height: MediaQuery.of(context).size.height/2-50,
-            child: StreamBuilder<QuerySnapshot>(
-              stream: db.collection('/names').document(uid).collection('Classes').snapshots(),
-              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snap){
-                if(snap.hasData){
-                  classes.clear();
-                  snap.data.documents.forEach((data){
-                    classes.add(data.documentID);
-                  });
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: classes.length,
-                    itemBuilder: (BuildContext context, int index){
-                      return new Card(
-                        color: Colors.transparent.withAlpha(10),
-                        child: Column(
-                            children: <Widget>[
-                              ListTile(
-                                title: Text(classes[index], style: TextStyle(fontSize: 20)),
-                              ),
-                            ]
-                        )
-                      );
-                    }
-                  );
-                }
-                else{
-                  return Center(
-                    child: CircularProgressIndicator()
-                  );
-                }
-              },
-            ),
-          )
-        ],
-      )
+            SizedBox(height: 20),
+            Container(
+              height: MediaQuery.of(context).size.height/2-50,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: db.collection('/names').document(uid).collection('Classes').snapshots(),
+                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snap){
+                  if(snap.hasData){
+                    classes.clear();
+                    snap.data.documents.forEach((data){
+                      classes.add(data.documentID);
+                    });
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: classes.length,
+                      itemBuilder: (BuildContext context, int index){
+                        return new Card(
+                          color: Colors.transparent.withAlpha(10),
+                          child: Column(
+                              children: <Widget>[
+                                ListTile(
+                                  title: Text(classes[index], style: TextStyle(fontSize: 20)),
+                                ),
+                              ]
+                          )
+                        );
+                      }
+                    );
+                  }
+                  else{
+                    return Center(
+                      child: CircularProgressIndicator()
+                    );
+                  }
+                },
+              ),
+            )
+          ],
+        )
       )
     );
   }
@@ -177,7 +180,6 @@ class _StudentHomeState extends State<StudentHome> {
   getStockPic() async{
     await FirebaseAuth.instance.currentUser().then((user){
       pictureUrl = user.photoUrl;
-      print(pictureUrl);
       setState(() {
       });
     });
@@ -213,14 +215,18 @@ class _StudentHomeState extends State<StudentHome> {
             children: <Widget>[
               TextField(
                 controller: codeCont,
+                autofocus: true,
+                autocorrect: false,
                 decoration: InputDecoration(hintText: "Code", prefixIcon: Icon(Icons.code)),
-                // onEditingComplete: () async{
-                //   print(codeCont.text);
-                //   await db.collection('/names').document(uid).collection('Classes').document(codeCont.text).setData({});
-                //   Navigator.pop(context);
-                // },
                 onSubmitted: (code) async{
-                  await db.collection('/names').document(uid).collection('Classes').document(code).setData({});
+                  if(await classExists(code)){
+                    await db.collection('/names').document(uid).collection('Classes').document(code).setData({}).then((_){
+                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Class Successfully Added!")));
+                    });
+                  }
+                  else{
+                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Class Does Not Exist")));
+                  }
                   Navigator.pop(context);
                 },
               )
@@ -231,7 +237,11 @@ class _StudentHomeState extends State<StudentHome> {
     }
   }
 
-  classExists() async{
-
+  Future<bool> classExists(String code) async{
+    final snap = await db.collection('/Classes').document(code).get();
+    if(snap.exists){
+      return true;
+    }
+    return false;
   }
 }
