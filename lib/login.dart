@@ -45,8 +45,30 @@ class _SilentLogInState extends State<SilentLogIn> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: CircularProgressIndicator(),
+    return Scaffold(
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.green[500],
+              Colors.blue[900],
+            ],
+            begin: const Alignment(0.5, 0.5),
+            end: const Alignment(1, -1),
+          )
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Text("Logging You In", style: TextStyle(fontSize: 30), textAlign: TextAlign.center,),
+            SizedBox(height:20),
+            CircularProgressIndicator(),
+          ]
+        )
+      )
     );
   }
 

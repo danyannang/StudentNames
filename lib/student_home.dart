@@ -7,6 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 
+// https://stackoverflow.com/questions/50759555/check-image-is-loaded-in-image-network-widget-in-flutter
+
 /*
  * Home page for the students.
  */
@@ -26,6 +28,7 @@ class _StudentHomeState extends State<StudentHome> {
     super.initState();
     getName();
     getPicture();
+    getClasses();
   }
 
   @override
@@ -36,10 +39,8 @@ class _StudentHomeState extends State<StudentHome> {
         title: Center(child: const Text('Home')),
         actions: <Widget>[
           IconButton(
-            icon: Icon( //Centering the title...
-              null,
-            ),
-            onPressed: null,
+            icon: Icon(Icons.settings),
+            onPressed: () => _addOrRemoveClassDialog(),
           ),
         ]
       ),
@@ -56,11 +57,6 @@ class _StudentHomeState extends State<StudentHome> {
             child: Icon(Icons.camera_roll),
             onTap: () => chooseImage(),
           ),
-          SpeedDialChild(
-            label: "print uid",
-            child: Icon(Icons.camera_roll),
-            onTap: () => getPicture()
-          )
         ],
       ),
       body: Center(
@@ -69,12 +65,27 @@ class _StudentHomeState extends State<StudentHome> {
             SizedBox(height: 20),
             Container(
               height: 250,
-              child: pictureUrl == null ? Placeholder(color: Colors.blue,) : Image.network(pictureUrl),
-              // child: Image.network(pictureUrl),
+              child: pictureUrl == null ? Placeholder(color: Colors.blue,) : Image.network(pictureUrl,
+                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent chunk){
+                  if(chunk == null){
+                    return child;
+                  }
+                  else{
+                    return Center(
+                      child: CircularProgressIndicator(
+                      value: chunk.expectedTotalBytes != null ? chunk.cumulativeBytesLoaded / chunk.expectedTotalBytes : null,
+                    ));
+                  }
+                },),
             ),
             SizedBox(height: 20),
             name == "" ? CircularProgressIndicator() :
               Text(name, style: TextStyle(fontSize: 30)),
+            SizedBox(height: 20),
+            // ListView.builder(
+            //   itemCount: ,
+            //   itemBuilder: null,
+            // ),
           ],
         )
       ),
@@ -135,5 +146,13 @@ class _StudentHomeState extends State<StudentHome> {
         getStockPic();
       }
     });
+  }
+
+  getClasses() async{
+
+  }
+
+  _addOrRemoveClassDialog() async{
+    print("_addOrRemoveClassDialog needs to be implemented.");
   }
 }
