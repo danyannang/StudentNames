@@ -36,6 +36,7 @@ class _StudentHomeState extends State<StudentHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       key: scaffoldKey,
       appBar: AppBar(
         title: name == "" ? CircularProgressIndicator() : Text(name, style: TextStyle(fontSize: 25)),
@@ -219,10 +220,11 @@ class _StudentHomeState extends State<StudentHome> {
                 autocorrect: false,
                 decoration: InputDecoration(hintText: "Code", prefixIcon: Icon(Icons.code)),
                 onSubmitted: (code) async{
-                  if(await classExists(code)){
-                    await db.collection('/names').document(uid).collection('Classes').document(code).setData({}).then((_){
-                      scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Class Successfully Added!")));
-                    });
+                  if(await classExists(code) == "Added"){
+                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Class Successfully Added!")));
+                  }
+                  else if(await classExists(code) == "Class Exists Already"){
+                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("You Are Already Enrolled In This Class")));
                   }
                   else{
                     scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Class Does Not Exist")));
@@ -237,11 +239,25 @@ class _StudentHomeState extends State<StudentHome> {
     }
   }
 
-  Future<bool> classExists(String code) async{
+  Future<String> classExists(String code) async{
     final snap = await db.collection('/Classes').document(code).get();
     if(snap.exists){
-      return true;
+      bool studentExist = false;
+      await db.collection('/names').document(uid).collection('Classes').getDocuments().then((data){
+        data.documents.forEach((d){
+          if(d.documentID == code){
+            print("Class Matches: ${d.documentID}");
+            studentExist = true;
+          }
+        });
+      });
+      if(studentExist == true){
+        return "Class Exists Already";
+      }
+      print("HERE");
+      await db.collection('/names').document(uid).collection('Classes').document(code).setData({'ID' : snap.data['ID']}, merge: true);
+      return "Added";
     }
-    return false;
+    return "Does Not Exist";
   }
 }
