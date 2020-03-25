@@ -19,19 +19,22 @@ class _InstructorHomeState extends State<InstructorHome> {
   var snapShot;
   String id;
   var classes;
-  QuerySnapshot result;
-  List<DocumentSnapshot> documents;
+  List<DocumentSnapshot> documents = new List<DocumentSnapshot>();
 
   //On initialization, get the list of all the instructor's classes from firestore.
   void _getClasses() async {
+    documents.clear();
     id = await getUID();
-    print(id);
-    result = await Firestore.instance.collection(id + 'CLASSES').getDocuments();
-    print(result);
-    documents = result.documents;
+    await Firestore.instance.collection('/Classes').getDocuments().then((docs){
+      print(docs);
+      docs.documents.forEach((doc){
+        if(doc.data['ID'] == id){
+          documents.add(doc);
+        }
+      });
+    });
+
     classes = documents.length;
-    print(documents);
-    print(classes);
     setState((){});
   }
 
@@ -91,43 +94,45 @@ class _InstructorHomeState extends State<InstructorHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          centerTitle: true,
-          title: Center(child: const Text('Your Courses')),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.settings,
-              ),
-              onPressed: () {
-                showEditClassesDialog(context);
-              }, //Add course, remove course
-            )
-          ]
-        ),
+        centerTitle: true,
+        title: Center(child: const Text('Your Courses')),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.settings,
+            ),
+            onPressed: () {
+              showEditClassesDialog(context);
+            }, //Add course, remove course
+          )
+        ]
+      ),
+      floatingActionButton: FloatingActionButton(onPressed: () => _getClasses(),),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: new ListView.builder(
           itemCount: classes,
           itemBuilder: (BuildContext context, int index) { //Just has a blank before the list of class names is loaded.
-            if (documents == null) {
-              return Text('');
-            }
-            else
-            return ButtonTheme(
-              height: 50,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: RaisedButton(
+            if(documents.length > 0){
+              return ButtonTheme(
+                height: 50,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: RaisedButton(
                     elevation: 25,
-                    onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => InstructorCourseHome())),
-                    child: Text(
-                      documents[index].documentID,
-                    )),
-              ),
-            );
+                    onPressed: () async{
+                      await Firestore.instance.collection('/Classes').document(documents[index].documentID).collection('Students').getDocuments().then((dat){
+                        Navigator.push(context,MaterialPageRoute(builder: (context) => InstructorCourseHome(dat.documents, documents[index])));
+                      });
+                    },
+                    child: Text(documents[index].documentID)
+                  ),
+                ),
+              );
+            }
+            else{
+              return Text("");
+            }
           }
         ),
       )

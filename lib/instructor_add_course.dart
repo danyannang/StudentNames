@@ -23,8 +23,8 @@ class _InstructorAddCourseState extends State<InstructorAddCourse> {
   }
 
   void _createNewClass() async {
-    Firestore.instance.collection(id + 'CLASSES').document(courseName.text)
-        .setData({ 'instructor': name, 'password': coursePass.text });
+    Firestore.instance.collection('Classes').document(coursePass.text)
+      .setData({'Instructor': name, 'ID' : id, 'Name' : courseName.text}, merge: true);
   }
 
   @override

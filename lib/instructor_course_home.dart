@@ -1,19 +1,37 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:student_names/login_home.dart';
 
 /*
  * After selecting a course, an instructor has three different options.
  */
 class InstructorCourseHome extends StatefulWidget {
+  final List<DocumentSnapshot> docs;
+  final DocumentSnapshot doc;
+  InstructorCourseHome(this.docs, this.doc);
   @override
-  _InstructorCourseHomeState createState() => _InstructorCourseHomeState();
+  _InstructorCourseHomeState createState() => _InstructorCourseHomeState(docs, doc);
 }
 
 class _InstructorCourseHomeState extends State<InstructorCourseHome> {
+
+  String name = "";
+  String id = "";
+  final List<DocumentSnapshot> docs;
+  final DocumentSnapshot doc;
+
+  _InstructorCourseHomeState(this.docs, this.doc);
+
+  @override
+  void initState() {
+    _getInstructorInfo();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Center(child: const Text('Course Name (Placeholder)')),
+          title: Center(child: Text(doc.data['Name'])),
           leading: new IconButton(
             icon: new Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
@@ -27,6 +45,7 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
             )
           ]
       ),
+      floatingActionButton: FloatingActionButton(onPressed: () => getData(),),
       body: Padding(
         padding: EdgeInsets.all(15.0),
         child: Center(child: Column(
@@ -67,5 +86,17 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
         )),
       ),
     );
+  }
+
+  void _getInstructorInfo() async{
+    id = await getUID();
+    name = await getName(id);
+  }
+
+  getData(){
+    print(doc.data['Name']);
+    docs.forEach((d){
+      print(d.data['Name']);
+    });
   }
 }

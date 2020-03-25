@@ -37,7 +37,6 @@ class _LoginHomeState extends State<LoginHome> {
    */
   void _checkUserName() async {
     id = await getUID();
-    print(id);
     name = await getName(id);
     snapShot = Firestore.instance
         .collection('names')
@@ -48,7 +47,6 @@ class _LoginHomeState extends State<LoginHome> {
       // If current doc doesn't exist, make one for the user
       // go to a page maybe named "New User" to change the name.
       snapShot.setData({'name':'$name'}, merge: true);
-      print(id);
     }
     else {
       // name = await snapShot.get().then((DocumentSnapshot ds) {
@@ -138,7 +136,6 @@ class _LoginHomeState extends State<LoginHome> {
                 child: RaisedButton(
                   elevation: 25,
                   onPressed: () {
-                    print("Printing ID: $id");
                     Firestore.instance.collection('names').document(id).setData({'Type' : 'Instructor'}, merge: true);
                     Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorHome()));
                   },

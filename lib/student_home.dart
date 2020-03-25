@@ -21,7 +21,6 @@ class _StudentHomeState extends State<StudentHome> {
   dynamic pictureUrl;
   Firestore db = Firestore.instance;
   List<String> classes = new List<String>();
-  bool snack = false;
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
 
@@ -30,7 +29,6 @@ class _StudentHomeState extends State<StudentHome> {
     super.initState();
     getName();
     getPicture();
-    getClasses();
   }
 
   @override
@@ -201,10 +199,6 @@ class _StudentHomeState extends State<StudentHome> {
     });
   }
 
-  getClasses() async{
-
-  }
-
   _addOrRemoveClassDialog(String action) async{
     TextEditingController codeCont;
     if(action == "Add"){
@@ -254,8 +248,10 @@ class _StudentHomeState extends State<StudentHome> {
       if(studentExist == true){
         return "Class Exists Already";
       }
-      print("HERE");
-      await db.collection('/names').document(uid).collection('Classes').document(code).setData({'ID' : snap.data['ID']}, merge: true);
+      await db.collection('/names').document(uid).collection('Classes')
+        .document(code).setData({'ID' : snap.data['ID']}, merge: true);
+      await db.collection('Classes').document(code).collection('Students').document(uid).setData({'Name' : name}, merge: true);
+      await db.collection('Classes').document(code).collection('Students').document(uid).setData({'Pic' : pictureUrl}, merge: true);
       return "Added";
     }
     return "Does Not Exist";
