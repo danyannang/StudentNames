@@ -273,7 +273,7 @@ class _StudentHomeState extends State<StudentHome> {
       courseName = data.data['Name'];
       instructorName = data.data['Instructor'];
     });
-    String add = await showDialog(
+    bool res = await showDialog(
       context: context,
       builder: (BuildContext context){
         return AlertDialog(
@@ -283,22 +283,19 @@ class _StudentHomeState extends State<StudentHome> {
             FlatButton(
               child: Text("Yes", style: TextStyle(color: Colors.blue)),
               onPressed: () {
-                Navigator.pop(context, 'yes');
+                Navigator.pop(context, true);
               },
             ),
             FlatButton(
               child: Text("No", style: TextStyle(color: Colors.red)),
               onPressed: () {
-                Navigator.pop(context, 'no');
+                Navigator.pop(context, false);
               },
             ),
           ],
         );
       }
     );
-    if(add == 'yes'){
-      return true;
-    }
-    return false;
+    return res;
   }
 }
