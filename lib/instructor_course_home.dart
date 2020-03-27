@@ -45,7 +45,6 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
             )
           ]
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () => getData(),),
       body: Padding(
         padding: EdgeInsets.all(15.0),
         child: Center(child: Column(
@@ -107,7 +106,6 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
       studentName.add(data.data['Name']);
       studentPic.add(data.data['Pic']);
     });
-    // print(student);
     Navigator.push(context,MaterialPageRoute(builder: (context) => StudentView(studentName, studentPic)));
   }
 }

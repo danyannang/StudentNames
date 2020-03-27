@@ -215,13 +215,16 @@ class _StudentHomeState extends State<StudentHome> {
                 decoration: InputDecoration(hintText: "Code", prefixIcon: Icon(Icons.code)),
                 onSubmitted: (code) async{
                   if(await classExists(code) == "Added"){
-                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Class Successfully Added!")));
+                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Class Successfully Added!"), duration: Duration(seconds: 3)));
                   }
                   else if(await classExists(code) == "Class Exists Already"){
-                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("You Are Already Enrolled In This Class")));
+                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("You Are Already Enrolled In This Class"), duration: Duration(seconds: 3)));
+                  }
+                  else if(await classExists(code) == "Cancelled"){
+                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Operation Cancelled"), duration: Duration(seconds: 3)));
                   }
                   else{
-                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Class Does Not Exist")));
+                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Class Does Not Exist"), duration: Duration(seconds: 3)));
                   }
                   Navigator.pop(context);
                 },
@@ -248,12 +251,54 @@ class _StudentHomeState extends State<StudentHome> {
       if(studentExist == true){
         return "Class Exists Already";
       }
-      await db.collection('/names').document(uid).collection('Classes')
-        .document(code).setData({'ID' : snap.data['ID']}, merge: true);
-      await db.collection('Classes').document(code).collection('Students').document(uid).setData({'Name' : name}, merge: true);
-      await db.collection('Classes').document(code).collection('Students').document(uid).setData({'Pic' : pictureUrl}, merge: true);
-      return "Added";
+      if(await _displayClassInfo(code)){
+        await db.collection('/names').document(uid).collection('Classes')
+          .document(code).setData({'ID' : snap.data['ID']}, merge: true);
+        await db.collection('Classes').document(code).collection('Students').document(uid).setData({'Name' : name}, merge: true);
+        await db.collection('Classes').document(code).collection('Students').document(uid).setData({'Pic' : pictureUrl}, merge: true);
+        return "Added";
+      }
+      else{
+        return "Cancelled";
+      }
     }
     return "Does Not Exist";
+  }
+
+  Future<bool> _displayClassInfo(String code) async{
+    print("HELLO");
+    String courseName;
+    String instructorName;
+    await db.collection('/Classes').document(code).get().then((data){
+      courseName = data.data['Name'];
+      instructorName = data.data['Instructor'];
+    });
+    String add = await showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return AlertDialog(
+          content: Text(courseName + " with " + instructorName),
+          title: Text("Are you sure you want to add this class?"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Yes", style: TextStyle(color: Colors.blue)),
+              onPressed: () {
+                Navigator.pop(context, 'yes');
+              },
+            ),
+            FlatButton(
+              child: Text("No", style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                Navigator.pop(context, 'no');
+              },
+            ),
+          ],
+        );
+      }
+    );
+    if(add == 'yes'){
+      return true;
+    }
+    return false;
   }
 }

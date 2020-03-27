@@ -107,7 +107,6 @@ class _InstructorHomeState extends State<InstructorHome> {
           )
         ]
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () => _getClasses(),),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: new ListView.builder(
