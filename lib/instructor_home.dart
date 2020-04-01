@@ -121,10 +121,13 @@ class _InstructorHomeState extends State<InstructorHome> {
                     elevation: 25,
                     onPressed: () async{
                       await Firestore.instance.collection('/Classes').document(documents[index].documentID).collection('Students').getDocuments().then((dat){
-                        Navigator.push(context,MaterialPageRoute(builder: (context) => InstructorCourseHome(dat.documents, documents[index])));
+                        Navigator.push(context,MaterialPageRoute(builder: (context) => InstructorCourseHome(dat.documents, documents[index]))).then((_){
+                          _getClasses();
+                        });
+                        setState((){});
                       });
                     },
-                    child: Text(documents[index].documentID)
+                    child: Text(documents[index]['Name'])
                   ),
                 ),
               );
