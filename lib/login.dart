@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 GoogleSignIn _googleSignIn;
+final Firestore db = Firestore.instance;
 
 /* 
  * This class is so that when the user closes the app they won't have to
@@ -150,9 +151,21 @@ class _LoginPageState extends State<LoginPage> {
     );
     final FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
     if(user != null){
-      // If user is an instructor pushReplacement InstructorHome()
-      // Else pushReplacement StudentHome()
-      Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new LoginHome()));
+      String uid = user.uid;
+      print("UID IS: $uid");
+      DocumentSnapshot doc = await db.collection('/names').document(uid).get();
+      if(doc.exists){
+        print(doc.data['Type']);
+        if(doc.data['Type'] == 'Instructor'){
+          Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new InstructorHome()));
+        }
+        else{
+          Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new StudentHome()));
+        }
+      }
+      else{
+        Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new LoginHome()));
+      }
     }
   }
 }

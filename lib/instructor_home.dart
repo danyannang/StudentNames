@@ -4,6 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:student_names/login_home.dart';
 import 'package:student_names/instructor_add_course.dart';
 import 'package:student_names/instructor_remove_course.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:student_names/login.dart';
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
+GoogleSignIn _googleSignIn;
 
 
 //Going to be changed to a listview builder instead...
@@ -97,6 +103,14 @@ class _InstructorHomeState extends State<InstructorHome> {
         centerTitle: true,
         title: Center(child: const Text('Your Courses')),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.all_out),
+            onPressed: () async{
+              Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new LoginPage()));            
+              await _googleSignIn.signOut();
+              await _auth.signOut();
+            },
+          ),
           IconButton(
             icon: Icon(
               Icons.settings,
