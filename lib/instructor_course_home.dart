@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:student_names/login_home.dart';
+import 'package:student_names/instructor_student_view.dart';
+import 'package:student_names/instructor_student_review.dart';
 
 /*
  * After selecting a course, an instructor has three different options.
@@ -22,6 +24,9 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
   TextEditingController courseName = new TextEditingController();
 
   _InstructorCourseHomeState(this.docs, this.doc);
+
+  List<String> studentName = new List<String>();
+  List<String> studentPic = new List<String>();
 
   void _changeName() async {
     Firestore.instance
@@ -83,6 +88,7 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
   void initState() {
     super.initState();
     n = doc['Name'];
+    _getStudents();
   }
 
   @override
@@ -116,7 +122,7 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
               height: MediaQuery.of(context).size.height / 5,
               child: RaisedButton(
                   elevation: 25,
-                  onPressed: () => _viewStudents(),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => StudentView(studentName, studentPic))),
                   child: Text(
                     'View Students',
                   )),
@@ -125,7 +131,7 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
               height: MediaQuery.of(context).size.height / 5,
               child: RaisedButton(
                   elevation: 25,
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => StudentReview(studentName, studentPic))),
                   child: Text(
                     'Review',
                   )),
@@ -157,95 +163,10 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
     });
   }
 
-  _viewStudents() async {
-    List<String> studentName = new List<String>();
-    List<String> studentPic = new List<String>();
+  _getStudents(){
     docs.forEach((data) {
       studentName.add(data.data['Name']);
       studentPic.add(data.data['Pic']);
     });
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => StudentView(studentName, studentPic)));
-  }
-}
-
-class StudentView extends StatefulWidget {
-  List<String> studentName = new List<String>();
-  List<String> studentPic = new List<String>();
-  StudentView(this.studentName, this.studentPic);
-  @override
-  _StudentViewState createState() => _StudentViewState(studentName, studentPic);
-}
-
-class _StudentViewState extends State<StudentView> {
-  List<String> studentName = new List<String>();
-  List<String> studentPic = new List<String>();
-  _StudentViewState(this.studentName, this.studentPic);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Student View"),
-        ),
-        body: Container(
-            color: Colors.black87,
-            child: GridView.count(
-                childAspectRatio: .65,
-                padding: const EdgeInsets.all(4.0),
-                crossAxisCount: 2,
-                children: List.generate(studentName.length, (index) {
-                  return Card(
-                    color: Color.fromRGBO(120, 0, 0, 1),
-                    child: ListTile(
-                      title: Image.network(
-                        studentPic[index],
-                        loadingBuilder: (BuildContext context, Widget child,
-                            ImageChunkEvent chunk) {
-                          if (chunk == null) {
-                            return child;
-                          } else {
-                            return Center(
-                                child: CircularProgressIndicator(
-                              value: chunk.expectedTotalBytes != null
-                                  ? chunk.cumulativeBytesLoaded /
-                                      chunk.expectedTotalBytes
-                                  : null,
-                            ));
-                          }
-                        },
-                        height: 235,
-                      ),
-                      subtitle: Text(studentName[index],
-                          style: TextStyle(color: Colors.black, fontSize: 18)),
-                    ),
-                  );
-
-                  // return GridTile(
-                  //   child: Column(
-                  //     children: <Widget>[
-                  //       Image.network(studentPic[index],
-                  //         loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent chunk){
-                  //           if(chunk == null){
-                  //             return child;
-                  //           }
-                  //           else{
-                  //             return Center(
-                  //               child: CircularProgressIndicator(
-                  //                 value: chunk.expectedTotalBytes != null ? chunk.cumulativeBytesLoaded / chunk.expectedTotalBytes : null,
-                  //               )
-                  //             );
-                  //           }
-                  //         },
-                  //         fit: BoxFit.cover,
-                  //         height: 250,
-                  //       ),
-                  //       Text(studentName[index].toString())
-                  //     ],
-                  //   )
-                  // );
-                }))));
   }
 }
