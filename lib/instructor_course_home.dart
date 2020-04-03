@@ -142,7 +142,7 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
                   elevation: 25,
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(
-                    'Games',
+                    'Test/Games',
                   )),
             ),
           ],
