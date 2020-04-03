@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
+import 'dart:math';
 
 class StudentReview extends StatefulWidget {
   List<String> studentName = new List<String>();
@@ -47,10 +48,11 @@ class _StudentReviewState extends State<StudentReview> {
                   )
                 ),
                 child: FlipCard(
-                    back: Center(child: Text(studentName[index], style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold))),
-                    front: ClipRRect(
+                  back: Center(child: Text(studentName[index], style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold))),
+                  front: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
-                      child: Image.network(studentPic[index], 
+                    child: Image.network(
+                      studentPic[index], 
                       fit: BoxFit.fill,
                       loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent chunk) {
                         if (chunk == null) {
@@ -68,8 +70,8 @@ class _StudentReviewState extends State<StudentReview> {
                       }, 
                       height: 400
                   ),
-              ),
                 ),
+              ),
             );
           },
         ),
@@ -77,7 +79,16 @@ class _StudentReviewState extends State<StudentReview> {
     );
   }
   _shuffleStudents(){
-    
+    for (int i = 0; i < studentName.length-1; ++i){
+      int j = Random().nextInt(studentName.length);
+      var tempName = studentName[i];
+      studentName[i] = studentName[j];
+      studentName[j] = tempName;
+
+      var tempPic = studentPic[i];
+      studentPic[i] = studentPic[j];
+      studentPic[j] = tempPic;
+    }
   }
 
 }
