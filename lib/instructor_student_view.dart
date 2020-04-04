@@ -16,76 +16,74 @@ class _StudentViewState extends State<StudentView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF3F5F7),
+      backgroundColor: Color(0xFFE3E5E7),
       appBar: AppBar(
         title: Text("Student View"),
+        backgroundColor: Color(0xFF249e7e),
       ),
       body: Container(
-        // color: Colors.black87,
         child: GridView.count(
           childAspectRatio: .65,
-          padding: const EdgeInsets.all(4.0),
+          // padding: const EdgeInsets.all(4.0),
           crossAxisCount: 2,
-          children: List.generate(studentName.length, (index) {
-            return Container(
-              child: Stack(
-                alignment: Alignment.bottomCenter,
+          children: List.generate(
+            studentName.length,
+            (index) {
+              return Column(
                 children: <Widget>[
                   Container(
-                    height: 60,
-                    width: 150,
+                    margin: EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 7),
+                    height: 200,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
-                      color: Colors.white,
-                    ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black26,
-                              offset: Offset(0.0, 2.0),
-                              blurRadius: 6.0
-                            )
-                          ]
-                        ),
-                        // height: 225,
-                        // width: 125,
+                      image: DecorationImage(
                         alignment: Alignment.topCenter,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            studentPic[index],
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent chunk) {
-                              if (chunk == null) {
-                                return child;
-                              } 
-                              else {
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: chunk.expectedTotalBytes != null
-                                      ? chunk.cumulativeBytesLoaded /
-                                          chunk.expectedTotalBytes
-                                      : null,
-                                  )
-                                );
-                              }
-                            },
-                            // fit: BoxFit.cover,
-                          ),
+                        fit: BoxFit.cover,
+                        image: NetworkImage(
+                          studentPic[index],
                         )
                       ),
-                      SizedBox(height:10),
-                      Text(studentName[index], style: TextStyle(color: Colors.black, fontSize: 20))
-                    ]
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          offset: Offset(0.0, 15.0),
+                          blurRadius: 6.0
+                        ),
+                        BoxShadow(
+                          color: Colors.black26,
+                          offset: Offset(0.0, 7.5),
+                          blurRadius: 3.0
+                        )
+                      ]
+                    ),
                   ),
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          offset: Offset(0.0, -15.0),
+                          blurRadius: 6.0
+                        ),
+                        BoxShadow(
+                          color: Colors.black26,
+                          offset: Offset(0.0, 15.0),
+                          blurRadius: 6.0
+                        ),
+                        BoxShadow(
+                          color: Colors.black26,
+                          offset: Offset(0.0, 7.5),
+                          blurRadius: 3.0
+                        )
+                      ]
+                    ),
+                    child: Text(studentName[index], style: TextStyle(color: Color(0xFF249e7e), fontSize: 16, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis,),
+                  )
                 ],
-              ),
-            );
+              );
             },
           ),
         ),

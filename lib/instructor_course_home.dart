@@ -59,7 +59,7 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
 
     // set up the button
     Widget changeButton = FlatButton(
-      child: Text("Confirm"),
+      child: Text("Confirm", style: TextStyle(color: Color(0xFF249e7e),)),
       onPressed: () {
         _changeName();
         Navigator.of(context).pop();
@@ -94,9 +94,11 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFE3E5E7),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
           title: Center(child: Text(n)),
+          backgroundColor: Color(0xFF249e7e),
           leading: new IconButton(
             icon: new Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
@@ -119,30 +121,36 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             ButtonTheme(
+              buttonColor: Color(0xFF249e7e),
               height: MediaQuery.of(context).size.height / 5,
               child: RaisedButton(
                   elevation: 25,
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => StudentView(studentName, studentPic))),
                   child: Text(
                     'View Students',
+                    style: TextStyle(color: Colors.white, fontSize: 20)
                   )),
             ),
             ButtonTheme(
+              buttonColor: Color(0xFF249e7e),
               height: MediaQuery.of(context).size.height / 5,
               child: RaisedButton(
                   elevation: 25,
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => StudentReview(studentName, studentPic))),
                   child: Text(
                     'Review',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
                   )),
             ),
             ButtonTheme(
+              buttonColor: Color(0xFF249e7e),
               height: MediaQuery.of(context).size.height / 5,
               child: RaisedButton(
                   elevation: 25,
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(
                     'Test/Games',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
                   )),
             ),
           ],

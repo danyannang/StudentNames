@@ -26,10 +26,12 @@ class _StudentReviewState extends State<StudentReview> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFE3E5E7),
       key: scaffoldRevKey,
       resizeToAvoidBottomPadding: true,
       appBar: AppBar(
         title: Text("Student Review"),
+        backgroundColor: Color(0xFF249e7e),
       ),
       body: Center(
         child: PageView.builder(
@@ -37,18 +39,10 @@ class _StudentReviewState extends State<StudentReview> {
           itemBuilder: (BuildContext context, int index) {
             return Container(
                 padding: EdgeInsets.all(50),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.green[500],
-                      Colors.blue[900],
-                    ],
-                    begin: const Alignment(0.5, 0.5),
-                    end: const Alignment(1, -1),
-                  )
-                ),
                 child: FlipCard(
-                  back: Center(child: Text(studentName[index], style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold))),
+                  back: Center(
+                    child: Text(studentName[index], style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Color(0xFF249e7e)))
+                  ),
                   front: ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.network(
