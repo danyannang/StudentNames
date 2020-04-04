@@ -57,7 +57,7 @@ class _InstructorHomeState extends State<InstructorHome> {
   showEditClassesDialog(BuildContext context) {
     // set up the button
     Widget addButton = FlatButton(
-      child: Text("Add Course"),
+      child: Text("Add Course", style: TextStyle(color: Color(0xFF249e7e))),
       onPressed: () {
         Navigator.of(context).pop();
         _addClass();
@@ -65,7 +65,7 @@ class _InstructorHomeState extends State<InstructorHome> {
     );
 
     Widget removeButton = FlatButton(
-      child: Text("Remove Course"),
+      child: Text("Remove Course", style: TextStyle(color: Color(0xFF249e7e))),
       onPressed: () {
         Navigator.of(context).pop();
         _deleteClass();
@@ -99,9 +99,11 @@ class _InstructorHomeState extends State<InstructorHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFE3E5E7),
       appBar: AppBar(
         centerTitle: true,
         title: Center(child: const Text('Your Courses')),
+        backgroundColor: Color(0xFF249e7e),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.all_out),
@@ -141,7 +143,8 @@ class _InstructorHomeState extends State<InstructorHome> {
                         setState((){});
                       });
                     },
-                    child: Text(documents[index]['Name'])
+                    child: Text(documents[index]['Name'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                    color: Color(0xFF249e7e),
                   ),
                 ),
               );
