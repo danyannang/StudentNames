@@ -26,7 +26,7 @@ class _StudentReviewState extends State<StudentReview> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFE3E5E7),
+      backgroundColor: Color(0xFFC3C5C7),
       key: scaffoldRevKey,
       resizeToAvoidBottomPadding: true,
       appBar: AppBar(

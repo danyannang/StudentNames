@@ -35,7 +35,7 @@ class _StudentHomeState extends State<StudentHome> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       key: scaffoldKey,
-      backgroundColor: Color(0xFFE3E5E7),
+      backgroundColor: Color(0xFFC3C5C7),
       appBar: AppBar(
         backgroundColor: Color(0xFF249e7e),
         title: name == "" ? CircularProgressIndicator() : Text(name, style: TextStyle(fontSize: 25)),
