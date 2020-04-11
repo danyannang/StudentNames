@@ -112,32 +112,45 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFC3C5C7),
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.green[500],
-              Colors.blue[900],
-            ],
-            begin: const Alignment(0.5, 0.5),
-            end: const Alignment(1, -1),
-          )
-        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            FlatButton(
-              onPressed: () => _signOn(), 
-              child: Text("Google Sign In", style: TextStyle(fontSize: 40, color: Colors.white70)),
-              color: Colors.transparent.withAlpha(50),
-              colorBrightness: Brightness.dark,
+            SizedBox(height: 250),
+            Text("Student Names", style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold, color: Color(0xFF249e7e))),
+            SizedBox(height: 25),
+            Container(
+              color: Color(0xFF249e7e),
+              width: 250,
+              height: 1, 
+            ),
+            SizedBox(height: 25),
+            RaisedButton(
+              onPressed: () => _signOn(),
+              padding: EdgeInsets.only(top: 7.5, bottom: 7.5, left: 5, right: 5),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Image(
+                    image: AssetImage("assets/google_logo.png"),
+                    height: 30,
+                  ),
+                  SizedBox(width: 10),
+                  Text("Sign In With Google", style: TextStyle(fontSize: 30, color: Color(0xFF249e7e))),
+                ],
+              ),
+              colorBrightness: Brightness.light,
+              color: Colors.white,
+              elevation: 20,
             )
-          ],
+          ]
         ),
-      )
+      ),
     );
   }
 

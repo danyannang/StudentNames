@@ -26,9 +26,8 @@ class _StudentHomeState extends State<StudentHome> {
 
   @override
   void initState(){
+    getNameandPic();
     super.initState();
-    getName();
-    getPicture();
   }
 
   @override
@@ -36,59 +35,45 @@ class _StudentHomeState extends State<StudentHome> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       key: scaffoldKey,
+      backgroundColor: Color(0xFFC3C5C7),
       appBar: AppBar(
+        backgroundColor: Color(0xFF249e7e),
         title: name == "" ? CircularProgressIndicator() : Text(name, style: TextStyle(fontSize: 25)),
         actions: <Widget>[
-          PopupMenuButton<String>(
-            onSelected: (res) => _addOrRemoveClassDialog(res),
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              PopupMenuItem<String>(
-                child: Text("Add A New Class"),
-                value: "Add"
-              ),
-              PopupMenuItem<String>(
-                child: Text("Remove A Class"),
-                value: "Remove"
-              ),
-            ],
+          FlatButton(
+            padding: EdgeInsets.only(left: 30),
+            child: Icon(Icons.add, color: Colors.white, size: 30,),
+            onPressed: () => _addClassDialog(),
           )
         ]
       ),
       floatingActionButton: SpeedDial(
+        backgroundColor: Color(0xFF249e7e),
         child: Icon(Icons.camera),
         children: [
           SpeedDialChild(
             label: "Take A Picture",
             child: Icon(Icons.camera_alt),
+            backgroundColor: Color(0xFF249e7e),
             onTap: () => takeImage(),
           ),
           SpeedDialChild(
             label: "Choose A Picture",
             child: Icon(Icons.camera_roll),
+            backgroundColor: Color(0xFF249e7e),
             onTap: () => chooseImage(),
           ),
         ],
       ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.green[500],
-              Colors.blue[900],
-            ],
-            begin: const Alignment(0.5, 0.5),
-            end: const Alignment(1, -1),
-          )
-        ),
-        child: Column(
+      body: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            SizedBox(width: 10),
+            SizedBox(height: 20),
             Container(
               height: MediaQuery.of(context).size.height/2-75,
-              child: pictureUrl == null ? Placeholder(color: Colors.blue,) : Image.network(pictureUrl,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: pictureUrl == null ? Placeholder(color: Color(0xFF249e7e)) : Image.network(pictureUrl,
                 loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent chunk){
                   if(chunk == null){
                     return child;
@@ -101,6 +86,7 @@ class _StudentHomeState extends State<StudentHome> {
                   }
                 },
               ),
+              )
             ),
             SizedBox(height: 20),
             Container(
@@ -118,11 +104,14 @@ class _StudentHomeState extends State<StudentHome> {
                       itemCount: classes.length,
                       itemBuilder: (BuildContext context, int index){
                         return new Card(
-                          color: Colors.transparent.withAlpha(10),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          color: Color(0xFF249e7e),
                           child: Column(
                               children: <Widget>[
                                 ListTile(
-                                  title: Text(classes[index], style: TextStyle(fontSize: 20)),
+                                  dense: true,
+                                  title: Text(classes[index], textAlign: TextAlign.center, style: TextStyle(fontSize: 20, color: Colors.white)),
+                                  onLongPress: () => removeClass(classes[index]),
                                 ),
                               ]
                           )
@@ -140,31 +129,70 @@ class _StudentHomeState extends State<StudentHome> {
             )
           ],
         )
-      )
     );
   }
   Future takeImage() async{
-    var image = await ImagePicker.pickImage(source: ImageSource.camera);
-    StorageReference storageReference = FirebaseStorage.instance.ref().child(uid);    
-    StorageUploadTask uploadTask = storageReference.putFile(image);    
-    await uploadTask.onComplete;    
-    await storageReference.getDownloadURL().then((fileURL) {    
-      db.collection('/names').document(uid).setData({"Pic" : fileURL}, merge: true);
-    }).then((_){
-      getPicture();
-    });
+    bool res = await showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text("When taking an image please make sure you're as close to the center as possible."),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Cancel", style: TextStyle(color: Color(0xFF249e7e))),
+              onPressed: () => Navigator.pop(context, false),
+            ),
+            FlatButton(
+              child: Text("OK", style: TextStyle(color: Color(0xFF249e7e))),
+              onPressed: () => Navigator.pop(context, true),
+            )
+          ],
+        );
+      }
+    );
+    if(res){
+      var image = await ImagePicker.pickImage(source: ImageSource.camera);
+      StorageReference storageReference = FirebaseStorage.instance.ref().child(uid);    
+      StorageUploadTask uploadTask = storageReference.putFile(image);    
+      await uploadTask.onComplete;    
+      await storageReference.getDownloadURL().then((fileURL) {    
+        db.collection('/names').document(uid).setData({"Pic" : fileURL}, merge: true);
+      }).then((_){
+        getPicture();
+      });
+    }
   }
 
   Future chooseImage() async{
-    var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    StorageReference storageReference = FirebaseStorage.instance.ref().child(uid);    
-    StorageUploadTask uploadTask = storageReference.putFile(image);    
-    await uploadTask.onComplete;    
-    await storageReference.getDownloadURL().then((fileURL) {    
-      db.collection('/names').document(uid).setData({"Pic" : fileURL}, merge: true);
-    }).then((_){
-      getPicture();
-    });
+    bool res = await showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text("When taking an image please make sure you're as close to the center as possible."),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Cancel", style: TextStyle(color: Color(0xFF249e7e))),
+              onPressed: () => Navigator.pop(context, false),
+            ),
+            FlatButton(
+              child: Text("OK", style: TextStyle(color: Colors.red)),
+              onPressed: () => Navigator.pop(context, true),
+            )
+          ],
+        );
+      }
+    );
+    if(res){
+      var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+      StorageReference storageReference = FirebaseStorage.instance.ref().child(uid);    
+      StorageUploadTask uploadTask = storageReference.putFile(image);    
+      await uploadTask.onComplete;    
+      await storageReference.getDownloadURL().then((fileURL) {    
+        db.collection('/names').document(uid).setData({"Pic" : fileURL}, merge: true);
+      }).then((_){
+        getPicture();
+      });
+    }
   }
 
   getName() async{
@@ -199,41 +227,72 @@ class _StudentHomeState extends State<StudentHome> {
     });
   }
 
-  _addOrRemoveClassDialog(String action) async{
+  _addClassDialog() async{
     TextEditingController codeCont;
-    if(action == "Add"){
-      showDialog(
-        context: context,
-        builder: (BuildContext context){
-          return SimpleDialog(
-            title: Text("Enter The Code Of The Class", style: TextStyle(fontSize: 20)),
-            children: <Widget>[
-              TextField(
-                controller: codeCont,
-                autofocus: true,
-                autocorrect: false,
-                decoration: InputDecoration(hintText: "Code", prefixIcon: Icon(Icons.code)),
-                onSubmitted: (code) async{
-                  if(await classExists(code) == "Added"){
-                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Class Successfully Added!"), duration: Duration(seconds: 3)));
-                  }
-                  else if(await classExists(code) == "Class Exists Already"){
-                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("You Are Already Enrolled In This Class"), duration: Duration(seconds: 3)));
-                  }
-                  else if(await classExists(code) == "Cancelled"){
-                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Operation Cancelled"), duration: Duration(seconds: 3)));
-                  }
-                  else{
-                    scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Class Does Not Exist"), duration: Duration(seconds: 3)));
-                  }
-                  Navigator.pop(context);
-                },
-              )
-            ],
-          );
-        }
-      );
-    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return SimpleDialog(
+          backgroundColor: Color(0xFFE3E5E7),
+          titlePadding: EdgeInsets.only(left: 10, right: 10, top: 20, bottom: 20),
+          title: Text("Enter The Code Of The Class", style: TextStyle(fontSize: 20, color: Color(0xFF249e7e))),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          contentPadding: EdgeInsets.only(bottom: 20, left: 10, right: 10),
+          children: <Widget>[
+            TextField(
+              controller: codeCont,
+              cursorColor: Color(0xFF249e7e),
+              autofocus: true,
+              autocorrect: false,
+              decoration: InputDecoration(
+                hintText: "Code",
+                icon: Icon(Icons.code),
+              ),
+              onSubmitted: (code) async{
+                if(await classExists(code) == "Added"){
+                  scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Class Successfully Added!"), duration: Duration(seconds: 3)));
+                }
+                else if(await classExists(code) == "Class Exists Already"){
+                  scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("You Are Already Enrolled In This Class"), duration: Duration(seconds: 3)));
+                }
+                else if(await classExists(code) == "Cancelled"){
+                  scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Operation Cancelled"), duration: Duration(seconds: 3)));
+                }
+                else{
+                  scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Class Does Not Exist"), duration: Duration(seconds: 3)));
+                }
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      }
+    );
+  }
+
+  removeClass(String index) async{
+    showDialog(
+      context: context, 
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text("Are you sure you want to remove this class?"),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () => Navigator.pop(context), 
+              child: Text("No", style: TextStyle(color: Colors.red))
+            ),
+            FlatButton(
+              onPressed: (){
+                db.collection('/names').document(uid).collection('Classes').document(index).delete();
+                db.collection('/Classes').document(index).collection('Students').document(uid).delete();
+                Navigator.pop(context);
+              }, 
+              child: Text("Yes", style: TextStyle(color: Color(0xFF249e7e)))
+            ),
+          ],
+        );
+      }
+    );
   }
 
   Future<String> classExists(String code) async{
@@ -266,7 +325,6 @@ class _StudentHomeState extends State<StudentHome> {
   }
 
   Future<bool> _displayClassInfo(String code) async{
-    print("HELLO");
     String courseName;
     String instructorName;
     await db.collection('/Classes').document(code).get().then((data){
@@ -281,15 +339,15 @@ class _StudentHomeState extends State<StudentHome> {
           title: Text("Are you sure you want to add this class?"),
           actions: <Widget>[
             FlatButton(
-              child: Text("Yes", style: TextStyle(color: Colors.blue)),
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-            ),
-            FlatButton(
               child: Text("No", style: TextStyle(color: Colors.red)),
               onPressed: () {
                 Navigator.pop(context, false);
+              },
+            ),
+            FlatButton(
+              child: Text("Yes", style: TextStyle(color: Colors.blue)),
+              onPressed: () {
+                Navigator.pop(context, true);
               },
             ),
           ],
@@ -298,4 +356,11 @@ class _StudentHomeState extends State<StudentHome> {
     );
     return res;
   }
+
+  getNameandPic() async{
+    await getName();
+    await getPicture();
+    setState((){});
+  }
+
 }

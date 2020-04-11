@@ -99,7 +99,7 @@ class _InstructorHomeState extends State<InstructorHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFE3E5E7),
+      backgroundColor: Color(0xFFC3C5C7),
       appBar: AppBar(
         centerTitle: true,
         title: Center(child: const Text('Your Courses')),

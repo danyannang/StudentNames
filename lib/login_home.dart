@@ -99,25 +99,27 @@ class _LoginHomeState extends State<LoginHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFC3C5C7),
       appBar: AppBar(
-          centerTitle: true,
-          title: Center(child: Text('Welcome, $name')),
-          leading: new IconButton(
-            icon: new Icon(Icons.sentiment_neutral, color: Colors.white), //This is just here to help center title...
-            onPressed: null,
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.settings, //Change name to be identified as
-              ),
-              onPressed: () {
-                showChangeNameDialog(context);
-                print(name);
-                setState((){});
-              },
-            )
-          ]
+        backgroundColor: Color(0xFF249e7e),
+        centerTitle: true,
+        title: Center(child: Text('Welcome, $name')),
+        leading: new IconButton(
+          icon: new Icon(Icons.sentiment_neutral, color: Colors.white), //This is just here to help center title...
+          onPressed: null,
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.settings, //Change name to be identified as
+            ),
+            onPressed: () {
+              showChangeNameDialog(context);
+              print(name);
+              setState((){});
+            },
+          )
+        ]
       ),
       body: Padding(
         padding: EdgeInsets.all(50.0),

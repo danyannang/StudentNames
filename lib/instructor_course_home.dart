@@ -95,7 +95,7 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFE3E5E7),
+      backgroundColor: Color(0xFFC3C5C7),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
           title: Center(child: Text(n)),

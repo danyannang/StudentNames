@@ -16,7 +16,7 @@ class _StudentViewState extends State<StudentView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFE3E5E7),
+      backgroundColor: Color(0xFFC3C5C7),
       appBar: AppBar(
         title: Text("Student View"),
         backgroundColor: Color(0xFF249e7e),
