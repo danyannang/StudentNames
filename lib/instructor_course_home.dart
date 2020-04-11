@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:student_names/login_home.dart';
 import 'package:student_names/instructor_student_view.dart';
 import 'package:student_names/instructor_student_review.dart';
+import 'package:student_names/instructor_other_home.dart';
 
 /*
  * After selecting a course, an instructor has three different options.
@@ -147,7 +148,7 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
               height: MediaQuery.of(context).size.height / 5,
               child: RaisedButton(
                   elevation: 25,
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorOtherHome(studentName, studentPic))),
                   child: Text(
                     'Test/Games',
                     style: TextStyle(color: Colors.white, fontSize: 20),
