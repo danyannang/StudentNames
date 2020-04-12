@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flip_card/flip_card.dart';
-import 'dart:math';
 import 'package:student_names/instructor_rollcall.dart';
+import 'package:student_names/instructor_test.dart';
+import 'package:student_names/instructor_match.dart';
 
 class InstructorOtherHome extends StatefulWidget {
   List<String> studentName = new List<String>();
@@ -27,7 +27,6 @@ class _InstructorOtherHomeState extends State<InstructorOtherHome> {
   showEditCourseNameDialog(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     var width = screenSize.width;
-    var height = screenSize.height;
 
     Widget nameField = Center(
       child: Container(
@@ -102,9 +101,9 @@ class _InstructorOtherHomeState extends State<InstructorOtherHome> {
                   height: MediaQuery.of(context).size.height / 5,
                   child: RaisedButton(
                       elevation: 25,
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () => _testDialog(),
                       child: Text(
-                          'Placeholder',
+                          'Test',
                           style: TextStyle(color: Colors.white, fontSize: 20)
                       )),
                 ),
@@ -113,9 +112,28 @@ class _InstructorOtherHomeState extends State<InstructorOtherHome> {
                   height: MediaQuery.of(context).size.height / 5,
                   child: RaisedButton(
                       elevation: 25,
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context){
+                            return AlertDialog(
+                              title: Text("Match"),
+                               content: Text("Match the name to each picture"),
+                               actions: <Widget>[
+                                  FlatButton(
+                                    onPressed: (){
+                                      Navigator.pop(context);
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorMatch(studentName, studentPic)));
+                                    },
+                                   child: Text("Ok")
+                                 )
+                               ],
+                            );
+                          }
+                        );
+                      },
                       child: Text(
-                        'Placeholder',
+                        'Match',
                         style: TextStyle(color: Colors.white, fontSize: 20),
                       )),
                 ),
@@ -133,6 +151,31 @@ class _InstructorOtherHomeState extends State<InstructorOtherHome> {
               ],
             )),
       ),
+    );
+  }
+
+  _testDialog(){
+    showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text("Test"),
+          content: Text("Would you like to test yourself?"),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Cancel", style: TextStyle(color: Colors.red)),
+              onPressed: () => Navigator.pop(context),
+            ),
+            FlatButton(
+              child: Text("Yes", style: TextStyle(color: Color(0xFF249e7e))),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorTest(studentName, studentPic)));
+              }
+            )
+          ],
+        );
+      }
     );
   }
 }

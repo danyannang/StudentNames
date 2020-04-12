@@ -62,16 +62,20 @@ class _InstructorRollcallState extends State<InstructorRollcall> {
     setState(() {
       print("fillcell");
       gridPic[index] = studentPic[cur]; //cur increments by one every time,
-      displayName = student[gridPic[index]];
+      displayPic = studentPic[cur];
+      displayName = studentName[cur];
       cur++;
       if (cur == studentPic.length) {
         //All students placed
         print("rollcall end");
-        started =
-            false; //So that clicking on the boxes now will call showCell instead of fillCell
+        started = false; //So that clicking on the boxes now will call showCell instead of fillCell
         cur = -1;
         displayPic = ""; //Picture URL for the listtile
         displayName = " "; //Name displayed in the listtile
+      }
+      else{
+        displayPic = studentPic[cur];
+        displayName = studentName[cur];
       }
     });
   }
@@ -90,7 +94,6 @@ class _InstructorRollcallState extends State<InstructorRollcall> {
   showEditCourseNameDialog(BuildContext context) {
     var screenSize = MediaQuery.of(context).size;
     var width = screenSize.width;
-    var height = screenSize.height;
 
     Widget nameField = Row(
       children: <Widget>[
@@ -194,7 +197,7 @@ class _InstructorRollcallState extends State<InstructorRollcall> {
           children: <Widget>[
             Spacer(),
             Container(
-              height: MediaQuery.of(context).size.height / 2,
+              height: MediaQuery.of(context).size.height / 2 - 25,
               child: GridView.count(
                 mainAxisSpacing: 0,
                 crossAxisSpacing: 0,
@@ -229,9 +232,8 @@ class _InstructorRollcallState extends State<InstructorRollcall> {
                             child:
                                 //Text('$index'),
                                 Container(
-                                    height:
-                                        50, //This and width are going to have to use MediaQuery sizes to adjust, also crossAxisCount and itemcount..
-                                    width: 50,
+                                    height: 75, //This and width are going to have to use MediaQuery sizes to adjust, also crossAxisCount and itemcount..
+                                    width: 75,
                                     decoration: BoxDecoration(
                                         image: DecorationImage(
                                       image: NetworkImage(gridPic[
