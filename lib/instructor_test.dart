@@ -12,13 +12,14 @@ class InstructorTest extends StatefulWidget {
 }
 
 class _InstructorTestState extends State<InstructorTest> {
-    List<String> studentName = new List<String>();
+  List<String> studentName = new List<String>();
   List<String> studentPic = new List<String>();
   _InstructorTestState(this.studentName, this.studentPic);
 
   PageController pC = new PageController();
+  TextEditingController answerCont = new TextEditingController();
 
-  int answer = -1;
+  bool answer = false;
 
   @override
   void initState() {
@@ -29,18 +30,15 @@ class _InstructorTestState extends State<InstructorTest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Color(0xFFC3C5C7),
-      floatingActionButton: FloatingActionButton(
-        onPressed: answer != -1 ? () => pC.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeOutCubic) : null,
-        child: Icon(Icons.keyboard_arrow_right),
-      ),
       body: SafeArea(
         bottom: true,
         child: PageView.builder(
           controller: pC,
           onPageChanged: ((_){
             setState(() {
-              answer = -1;
+              answer = false;
             });
           }),
           itemCount: studentName.length,
@@ -70,33 +68,25 @@ class _InstructorTestState extends State<InstructorTest> {
                         ),
                       ),
                     ),
-                    Container(
-                      child: Form(
-                        child: Column(
-                          children: <Widget>[
-                            RadioListTile(
-                              value: 0,
-                              groupValue: answer, 
-                              onChanged: _selectAnswer,
-                            ),
-                            RadioListTile(
-                              value: 1,
-                              groupValue: answer, 
-                              onChanged: _selectAnswer,
-                            ),
-                            RadioListTile(
-                              value: 2,
-                              groupValue: answer, 
-                              onChanged: _selectAnswer,
-                            ),
-                            RadioListTile(
-                              value: 3,
-                              groupValue: answer, 
-                              onChanged: _selectAnswer,
-                            ),
-                          ],
+                    SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 20, top: 30, bottom: 20),
+                      child: TextField(
+                        controller: answerCont,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                         ),
                       ),
+                    ),
+                    RaisedButton(
+                      onPressed: answerCont.text == "" ? null : (){
+                        _processAnswer(pC.page.ceil());
+                        answerCont.clear();
+                        pC.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeOutCubic);
+                      },
+                      child: index == studentName.length-1 ? Text("Submit") : Text("Next"),
                     )
                   ],
                 ),
@@ -121,22 +111,16 @@ class _InstructorTestState extends State<InstructorTest> {
     }
   }
 
-  _getAnswers(){
-
-    for(int i = 0; i < 3; i++){
-
+  _processAnswer(int correctAnswer){
+    String answer = studentName[correctAnswer].toLowerCase();
+    String givenAnswer = answerCont.text.toLowerCase();
+    print(answer);
+    print(givenAnswer);
+    if(answer == givenAnswer){
+      print("correct");
+    }
+    else{
+      print("wrong");
     }
   }
-
-  _selectAnswer(int index){
-    print(index);
-    setState(() {
-      answer = index;
-    });
-  }
-
-  processAnswer(){
-
-  }
 }
-
