@@ -100,53 +100,65 @@ class _InstructorOtherHomeState extends State<InstructorOtherHome> {
                   buttonColor: Color(0xFF249e7e),
                   height: MediaQuery.of(context).size.height / 5,
                   child: RaisedButton(
-                      elevation: 25,
-                      onPressed: () => _testDialog(),
-                      child: Text(
-                          'Test',
-                          style: TextStyle(color: Colors.white, fontSize: 20)
-                      )),
+                    elevation: 25,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)
+                    ),
+                    onPressed: () => _testDialog(),
+                    child: Text(
+                        'Test',
+                        style: TextStyle(color: Colors.white, fontSize: 20)
+                    )
+                  ),
                 ),
                 ButtonTheme(
                   buttonColor: Color(0xFF249e7e),
                   height: MediaQuery.of(context).size.height / 5,
                   child: RaisedButton(
-                      elevation: 25,
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context){
-                            return AlertDialog(
-                              title: Text("Match"),
-                               content: Text("Match the name to each picture"),
-                               actions: <Widget>[
-                                  FlatButton(
-                                    onPressed: (){
-                                      Navigator.pop(context);
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorMatch(studentName, studentPic)));
-                                    },
-                                   child: Text("Ok")
-                                 )
-                               ],
-                            );
-                          }
-                        );
-                      },
-                      child: Text(
-                        'Match',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      )),
+                    elevation: 25,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)
+                    ),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context){
+                          return AlertDialog(
+                            title: Text("Match"),
+                              content: Text("Match the name to each picture"),
+                              actions: <Widget>[
+                                FlatButton(
+                                  onPressed: (){
+                                    Navigator.pop(context);
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorMatch(studentName, studentPic)));
+                                  },
+                                  child: Text("Ok")
+                                )
+                              ],
+                          );
+                        }
+                      );
+                    },
+                    child: Text(
+                      'Match',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    )
+                  ),
                 ),
                 ButtonTheme(
                   buttonColor: Color(0xFF249e7e),
                   height: MediaQuery.of(context).size.height / 5,
                   child: RaisedButton(
-                      elevation: 25,
-                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorRollcall(studentName, studentPic))),
-                      child: Text(
-                        'Rollcall',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      )),
+                    elevation: 25,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)
+                    ),
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorRollcall(studentName, studentPic))),
+                    child: Text(
+                      'Rollcall',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    )
+                  ),
                 ),
               ],
             )),

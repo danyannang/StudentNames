@@ -125,6 +125,9 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
               height: MediaQuery.of(context).size.height / 5,
               child: RaisedButton(
                   elevation: 25,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)
+                  ),
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => StudentView(studentName, studentPic))),
                   child: Text(
                     'View Students',
@@ -136,6 +139,9 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
               height: MediaQuery.of(context).size.height / 5,
               child: RaisedButton(
                   elevation: 25,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)
+                  ),
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => StudentReview(studentName, studentPic))),
                   child: Text(
                     'Review',
@@ -147,6 +153,9 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
               height: MediaQuery.of(context).size.height / 5,
               child: RaisedButton(
                   elevation: 25,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)
+                  ),
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorOtherHome(studentName, studentPic))),
                   child: Text(
                     'Test/Games',

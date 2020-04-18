@@ -107,6 +107,9 @@ class _InstructorTestState extends State<InstructorTest> {
                 SizedBox(
                   width: 200,
                   child: TextField(
+                    autocorrect: false,
+                    enableInteractiveSelection: true,
+                    keyboardType: TextInputType.text,
                     controller: answerCont,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -117,7 +120,7 @@ class _InstructorTestState extends State<InstructorTest> {
                 ),
                 SizedBox(width: 10),
                 RaisedButton(
-                  onPressed: answerCont.text == "" ? null : (){
+                  onPressed: (){
                     _processAnswer(pC.page.ceil());
                     answerCont.clear();
                     pC.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeOutCubic);

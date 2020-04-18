@@ -135,6 +135,9 @@ class _InstructorHomeState extends State<InstructorHome> {
                   padding: const EdgeInsets.all(8.0),
                   child: RaisedButton(
                     elevation: 25,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)
+                    ),
                     onPressed: () async{
                       await Firestore.instance.collection('/Classes').document(documents[index].documentID).collection('Students').getDocuments().then((dat){
                         Navigator.push(context,MaterialPageRoute(builder: (context) => InstructorCourseHome(dat.documents, documents[index]))).then((_){
