@@ -107,13 +107,13 @@ class _StudentHomeState extends State<StudentHome> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                           color: Color(0xFF249e7e),
                           child: Column(
-                              children: <Widget>[
-                                ListTile(
-                                  dense: true,
-                                  title: Text(classes[index], textAlign: TextAlign.center, style: TextStyle(fontSize: 20, color: Colors.white)),
-                                  onLongPress: () => removeClass(classes[index]),
-                                ),
-                              ]
+                            children: <Widget>[
+                              ListTile(
+                                dense: true,
+                                title: Text(classes[index], textAlign: TextAlign.center, style: TextStyle(fontSize: 20, color: Colors.white)),
+                                onLongPress: () => removeClass(classes[index]),
+                              ),
+                            ]
                           )
                         );
                       }

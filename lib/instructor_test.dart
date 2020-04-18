@@ -107,6 +107,9 @@ class _InstructorTestState extends State<InstructorTest> {
                 SizedBox(
                   width: 200,
                   child: TextField(
+                    autocorrect: false,
+                    enableInteractiveSelection: true,
+                    keyboardType: TextInputType.text,
                     controller: answerCont,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -117,7 +120,7 @@ class _InstructorTestState extends State<InstructorTest> {
                 ),
                 SizedBox(width: 10),
                 RaisedButton(
-                  onPressed: answerCont.text == "" ? null : (){
+                  onPressed: (){
                     _processAnswer(pC.page.ceil());
                     answerCont.clear();
                     pC.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeOutCubic);
@@ -133,10 +136,33 @@ class _InstructorTestState extends State<InstructorTest> {
   }
 
   _finishedScreen(){
+    int correct = 0;
+    Color fontColor;
+    for(int i = 0; i < studentName.length; i++){
+      if(studentName[i].toLowerCase() == answers[i].toLowerCase()){
+        correct = correct + 1;
+      }
+    }
+    double score = correct.toDouble()/studentName.length.toDouble();
+    String scoreString = correct.toString() + "/" + studentName.length.toString();
+    double percentage = score * 100;
+    int pos = percentage.toString().indexOf('.');
+    if(score >= .9){
+      fontColor = Color(0xFF249e7e);
+    }
+    else if(score >= .75){
+      fontColor = Color(0xFFE6FF00);
+    }
+    else if(score >= .5){
+      fontColor = Color(0xFFFF9100);
+    }
+    else if(score < .5){
+      fontColor = Colors.red;
+    }
     return Column(
       children: <Widget>[
         Container(
-          height: 525,
+          height: 515,
           child: ListView.builder(
             itemCount: answers.length,
             itemBuilder: (BuildContext context, int index){
@@ -162,7 +188,7 @@ class _InstructorTestState extends State<InstructorTest> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            studentName[index].toLowerCase().contains(answers[index].toLowerCase())  ? Icon(Icons.check, color: Color(0xFF249e7e), size: 45,) : 
+                            studentName[index].toLowerCase() == answers[index].toLowerCase()  ? Icon(Icons.check, color: Color(0xFF249e7e), size: 45,) : 
                               Icon(Icons.close, color: Colors.red, size: 45),
                             Text("Correct Answer:", style: TextStyle(fontSize: 20),),
                             Text(studentName[index], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
@@ -179,7 +205,7 @@ class _InstructorTestState extends State<InstructorTest> {
                       width: MediaQuery.of(context).size.width-50,
                       margin: EdgeInsets.only(left: 25, right: 25),
                       decoration: BoxDecoration(
-                        color: studentName[index].toLowerCase().contains(answers[index].toLowerCase()) ? Color(0xFF249e7e) : Colors.red,
+                        color: studentName[index].toLowerCase() == answers[index].toLowerCase() ? Color(0xFF249e7e) : Colors.red,
                       ),
                     ),
                   ],
@@ -190,8 +216,21 @@ class _InstructorTestState extends State<InstructorTest> {
         ),
         SizedBox(height: 5),
         Container(
-          color: Colors.black,
           height: MediaQuery.of(context).size.height-555,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(percentage.toString().substring(0, pos)+ "%", style: TextStyle(fontSize: 25, color: fontColor)),
+              SizedBox(width: 15),
+              Text("Your score: $scoreString", style: TextStyle(fontSize: 25, color: fontColor),),
+              SizedBox(width: 15),
+              FlatButton(
+                onPressed: () => Navigator.pop(context), 
+                child: Text("Return"),
+                color: fontColor,
+              ),
+            ],
+          )
         )
       ],
     );
