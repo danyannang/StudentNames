@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+Map<String, Map<String, bool>> picked = new Map<String, Map<String, bool>>();
+Map<String, bool> namePicked = new Map<String, bool>();
+
 class InstructorMatch extends StatefulWidget {
   List<String> studentName = new List<String>();
   List<String> studentPic = new List<String>();
@@ -14,12 +17,15 @@ class _InstructorMatchState extends State<InstructorMatch> {
   List<String> studentPic = new List<String>();
   _InstructorMatchState(this.studentName, this.studentPic);
 
-  List<bool> picked = new List<bool>();
+
+  final GlobalKey<ScaffoldState> matchScaffoldKey = new GlobalKey<ScaffoldState>();
+
 
   @override
   void initState() {
     for(int i = 0; i < studentName.length; i++){
-      picked.add(false);
+      picked[studentName[i]] = {"": false};
+      namePicked[studentName[i]] = false;
     }
     super.initState();
   }
@@ -27,12 +33,13 @@ class _InstructorMatchState extends State<InstructorMatch> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: matchScaffoldKey,
       backgroundColor: Color(0xFFC3C5C7),
       appBar: AppBar(
         backgroundColor: Color(0xFF249e7e),
         actions: <Widget>[
           FlatButton(
-            onPressed: () => Navigator.of(context).pop(), 
+            onPressed: () => Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new FinishScreen(studentName, studentPic))),
             child: Text("Done", style: TextStyle(color: Colors.white, fontSize: 20)),
           )
         ],
@@ -64,7 +71,7 @@ class _InstructorMatchState extends State<InstructorMatch> {
     );
   }
 
-  _openChooser(int index){
+  _openChooser(int student){
     showDialog(
       context: context,
       builder: (BuildContext context){
@@ -75,7 +82,7 @@ class _InstructorMatchState extends State<InstructorMatch> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Image.network(
-                  studentPic[index],
+                  studentPic[student],
                   fit: BoxFit.cover,
                   height: 150,
                 ),
@@ -88,11 +95,30 @@ class _InstructorMatchState extends State<InstructorMatch> {
                 (index) {
                   return GestureDetector(
                     onTap: () {
-                     setState(() {
-                        picked[index] = !picked[index];
+                      setState(() {
+                        if(namePicked[studentName[index]] == true && studentName[index] != picked[studentName[student]].keys.first){
+                          print("Already picked");
+                          matchScaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Student Already Picked"), duration: Duration(seconds: 1)));
+                        }
+                        else{
+                          if(picked[studentName[student]].keys.first == ""){
+                            picked[studentName[student]] = {studentName[index] : true};
+                            namePicked[studentName[index]] = true;
+                          }
+                          else if(studentName[index] == picked[studentName[student]].keys.first){
+                            picked[studentName[student]] = {"" : false};
+                            namePicked[studentName[index]] = false;
+                          }
+                          else{
+                            namePicked[picked[studentName[student]].keys.first] = false;
+                            picked[studentName[student]] = {studentName[index] : true};
+                            namePicked[studentName[index]] = true;
+                          }
+                        }
+                        print(picked);
                       });
                     },
-                    child: Text(studentName[index], style: TextStyle(color: !picked[index] ? Colors.black : Color(0xFF249e7e))),
+                    child: Text(studentName[index], style: TextStyle(color: !namePicked[studentName[index]] ? Colors.black : Color(0xFF249e7e))),
                   );
                 }
               )
@@ -107,6 +133,31 @@ class _InstructorMatchState extends State<InstructorMatch> {
           }
         );
       }
+    );
+  }
+}
+
+class FinishScreen extends StatelessWidget {
+  List<String> studentName = new List<String>();
+  List<String> studentPic = new List<String>();
+  FinishScreen(this.studentName, this.studentPic);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFFC3C5C7),
+      appBar: AppBar(
+        backgroundColor: Color(0xFF249e7e),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            ListView.builder(
+              itemBuilder: null
+            )
+          ],
+        ),
+      ),
     );
   }
 }
