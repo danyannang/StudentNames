@@ -6,17 +6,19 @@ import 'package:student_names/instructor_rollcall.dart';
 class InstructorOtherHome extends StatefulWidget {
   List<String> studentName = new List<String>();
   List<String> studentPic = new List<String>();
-  InstructorOtherHome(this.studentName, this.studentPic);
+  var documentid;
+  InstructorOtherHome(this.studentName, this.studentPic, this.documentid);
   @override
   _InstructorOtherHomeState createState() =>
-      _InstructorOtherHomeState(studentName, studentPic);
+      _InstructorOtherHomeState(studentName, studentPic, documentid);
 }
 
 class _InstructorOtherHomeState extends State<InstructorOtherHome> {
   List<String> studentName = new List<String>();
   List<String> studentPic = new List<String>();
+  var documentid;
   TextEditingController courseName = new TextEditingController();
-  _InstructorOtherHomeState(this.studentName, this.studentPic);
+  _InstructorOtherHomeState(this.studentName, this.studentPic, this.documentid);
   final GlobalKey<ScaffoldState> scaffoldRevKey = new GlobalKey<ScaffoldState>();
 
   @override
@@ -124,7 +126,7 @@ class _InstructorOtherHomeState extends State<InstructorOtherHome> {
                   height: MediaQuery.of(context).size.height / 5,
                   child: RaisedButton(
                       elevation: 25,
-                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorRollcall(studentName, studentPic))),
+                      onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorRollcall(studentName, studentPic, documentid))),
                       child: Text(
                         'Rollcall',
                         style: TextStyle(color: Colors.white, fontSize: 20),

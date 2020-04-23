@@ -148,7 +148,7 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
               height: MediaQuery.of(context).size.height / 5,
               child: RaisedButton(
                   elevation: 25,
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorOtherHome(studentName, studentPic))),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorOtherHome(studentName, studentPic, doc.documentID))),
                   child: Text(
                     'Test/Games',
                     style: TextStyle(color: Colors.white, fontSize: 20),
