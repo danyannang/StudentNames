@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-
 class InstructorAbsences extends StatefulWidget {
   List<String> studentName = new List<String>();
   List<String> studentPic = new List<String>();
@@ -18,15 +16,19 @@ class _InstructorAbsencesState extends State<InstructorAbsences> {
   var documentid;
   _InstructorAbsencesState(this.documentid);
   final GlobalKey<ScaffoldState> scaffoldRevKey =
-  new GlobalKey<ScaffoldState>();
+      new GlobalKey<ScaffoldState>();
   QuerySnapshot result;
   List<DocumentSnapshot> documents;
   List _elements = [];
-  Map<String,dynamic> ablists = new Map<String,dynamic>();
+  Map<String, dynamic> ablists = new Map<String, dynamic>();
 
   void _getAbsences() async {
-    await Firestore.instance.collection('Classes').document(documentid).collection('Roll').getDocuments()
-    .then((result){
+    await Firestore.instance
+        .collection('Classes')
+        .document(documentid)
+        .collection('Roll')
+        .getDocuments()
+        .then((result) {
       setState(() {
         documents = result.documents;
         documents.forEach((data) {
@@ -34,9 +36,9 @@ class _InstructorAbsencesState extends State<InstructorAbsences> {
             ablists.addAll(data.data);
           }
           if (data.documentID != 'GridPics') {
-            data.data.values.forEach((name){
+            data.data.values.forEach((name) {
               for (int i = 0; i < name.length; i++) {
-                _elements.add({'date':data.documentID, 'name':name[i]});
+                _elements.add({'date': data.documentID, 'name': name[i]});
               }
             });
           }
@@ -44,13 +46,21 @@ class _InstructorAbsencesState extends State<InstructorAbsences> {
       });
     });
 
-
     print(ablists);
     print(_elements);
   }
 
   Widget _buildGroupSeparator(dynamic groupByValue) {
-    return Text('$groupByValue');
+    return Card(
+        color: Color(0xFF249e7e),
+        child: ListTile(
+            title: Text(
+      '$groupByValue',
+      style: TextStyle(
+        color: Color(0xFFE3E5E7),
+        fontWeight: FontWeight.bold,
+      ),
+    )));
   }
 
   @override
@@ -77,16 +87,18 @@ class _InstructorAbsencesState extends State<InstructorAbsences> {
                 Icons.settings,
                 color: Color(0xFF249e7e),
               ),
-              onPressed: () {
-              },
+              onPressed: () {},
             )
           ]),
-      body:
-      GroupedListView(
+      body: GroupedListView(
         elements: _elements,
         groupBy: (element) => element['date'],
         groupSeparatorBuilder: _buildGroupSeparator,
-        itemBuilder: (context, element) => Text(element['name']),
+        itemBuilder: (context, element) =>
+            Padding(
+              padding: const EdgeInsets.only(left:16.0, top:5.0, right:8.0, bottom:5.0),
+              child: Text(element['name']),
+            ),
         order: GroupedListOrder.DESC,
       ),
     );
