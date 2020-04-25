@@ -156,7 +156,7 @@ class _InstructorCourseHomeState extends State<InstructorCourseHome> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)
                   ),
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorOtherHome(studentName, studentPic))),
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorOtherHome(studentName, studentPic, doc.documentID))),
                   child: Text(
                     'Test/Games',
                     style: TextStyle(color: Colors.white, fontSize: 20),
