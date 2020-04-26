@@ -56,7 +56,7 @@ class _InstructorTestState extends State<InstructorTest> {
     );
   }
 
-    _shuffleStudents(){
+  _shuffleStudents(){
     for (int i = 0; i < studentName.length-1; ++i){
       int j = Random().nextInt(studentName.length);
       var tempName = studentName[i];

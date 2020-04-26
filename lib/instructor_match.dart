@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
+import 'package:flutter/services.dart';
+
 
 Map<String, Map<String, bool>> picked = new Map<String, Map<String, bool>>();
 Map<String, bool> namePicked = new Map<String, bool>();
@@ -19,6 +22,8 @@ class _InstructorMatchState extends State<InstructorMatch> {
 
 
   final GlobalKey<ScaffoldState> matchScaffoldKey = new GlobalKey<ScaffoldState>();
+  List<String> randomNames;
+
 
 
   @override
@@ -26,6 +31,14 @@ class _InstructorMatchState extends State<InstructorMatch> {
     for(int i = 0; i < studentName.length; i++){
       picked[studentName[i]] = {"": false};
       namePicked[studentName[i]] = false;
+    }
+    // randomNames = studentName;
+    randomNames = new List<String>.from(studentName);
+    for (int i = 0; i < randomNames.length-1; ++i){
+      int j = Random().nextInt(randomNames.length);
+      var tempName = randomNames[i];
+      randomNames[i] = randomNames[j];
+      randomNames[j] = tempName;
     }
     super.initState();
   }
@@ -40,26 +53,30 @@ class _InstructorMatchState extends State<InstructorMatch> {
         actions: <Widget>[
           FlatButton(
             onPressed: () => Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => new FinishScreen(studentName, studentPic))),
-            child: Text("Done", style: TextStyle(color: Colors.white, fontSize: 20)),
+            child: Text("Finish", style: TextStyle(color: Colors.white, fontSize: 20)),
           )
         ],
       ),
-      body: SafeArea(
+      body: Padding(
+        padding: const EdgeInsets.only(top: 5),
         child: GridView.count(
+          shrinkWrap: true,
           mainAxisSpacing: 5,
           crossAxisSpacing: 5,
           crossAxisCount: 3,
           children: List.generate(
             studentName.length,
             (index) {
-              return GestureDetector(
-                onTap: () => _openChooser(index),
-                child: Container(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Image.network(
-                      studentPic[index],
-                      fit: BoxFit.cover,
+              return Container(
+                child: GestureDetector(
+                  onTap: () => _openChooser(index),
+                  child: Container(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: Image.network(
+                        studentPic[index],
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
@@ -91,34 +108,32 @@ class _InstructorMatchState extends State<InstructorMatch> {
             content: GridView.count(
               crossAxisCount: 3,
               children: List.generate(
-                studentName.length,
+                randomNames.length,
                 (index) {
                   return GestureDetector(
                     onTap: () {
                       setState(() {
-                        if(namePicked[studentName[index]] == true && studentName[index] != picked[studentName[student]].keys.first){
-                          print("Already picked");
-                          matchScaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Student Already Picked"), duration: Duration(seconds: 1)));
+                        if(namePicked[randomNames[index]] == true && randomNames[index] != picked[studentName[student]].keys.first){
+                          HapticFeedback.selectionClick();
                         }
                         else{
                           if(picked[studentName[student]].keys.first == ""){
-                            picked[studentName[student]] = {studentName[index] : true};
-                            namePicked[studentName[index]] = true;
+                            picked[studentName[student]] = {randomNames[index] : true};
+                            namePicked[randomNames[index]] = true;
                           }
-                          else if(studentName[index] == picked[studentName[student]].keys.first){
+                          else if(randomNames[index] == picked[studentName[student]].keys.first){
                             picked[studentName[student]] = {"" : false};
-                            namePicked[studentName[index]] = false;
+                            namePicked[randomNames[index]] = false;
                           }
                           else{
                             namePicked[picked[studentName[student]].keys.first] = false;
-                            picked[studentName[student]] = {studentName[index] : true};
-                            namePicked[studentName[index]] = true;
+                            picked[studentName[student]] = {randomNames[index] : true};
+                            namePicked[randomNames[index]] = true;
                           }
                         }
-                        print(picked);
                       });
                     },
-                    child: Text(studentName[index], style: TextStyle(color: !namePicked[studentName[index]] ? Colors.black : Color(0xFF249e7e))),
+                    child: Text(randomNames[index], style: TextStyle(color: !namePicked[randomNames[index]] ? Colors.black : Color(0xFF249e7e))),
                   );
                 }
               )
@@ -148,15 +163,60 @@ class FinishScreen extends StatelessWidget {
       backgroundColor: Color(0xFFC3C5C7),
       appBar: AppBar(
         backgroundColor: Color(0xFF249e7e),
+        automaticallyImplyLeading: false,
+        actions: <Widget>[
+          FlatButton(
+            child: Text("Done", style: TextStyle(color: Colors.white, fontSize: 20)),
+            onPressed: () => Navigator.pop(context),
+          )
+        ],
       ),
-      body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            ListView.builder(
-              itemBuilder: null
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            height: MediaQuery.of(context).size.height-81,
+            child: ListView.builder(
+              itemCount: studentName.length,
+              itemBuilder: (BuildContext context, int index){
+                return Column(
+                  children: <Widget>[
+                    Container(
+                      height: 175,
+                      child: Row(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Container(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.network(studentPic[index], height: 170, width: 175, fit: BoxFit.cover)
+                              )
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20, top: 20),
+                            child: Column(
+                              children: <Widget>[
+                                Text("Correct Answer:", style: TextStyle(fontSize: 20),),
+                                Text(studentName[index], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                Text("Your Answer:", style: TextStyle(fontSize: 20),),
+                                Text(picked[studentName[index]].keys.first, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                                studentName[index].toLowerCase() == picked[studentName[index]].keys.first.toLowerCase()  ? Icon(Icons.check, color: Color(0xFF249e7e), size: 45,) : 
+                                  Icon(Icons.close, color: Colors.red, size: 45),
+                              ],
+                            ),
+                          )
+                        ],
+                      )
+                    ),
+                  ],
+                );
+              }
             )
-          ],
-        ),
+          )
+        ],
       ),
     );
   }
