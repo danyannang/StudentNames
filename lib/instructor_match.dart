@@ -93,60 +93,64 @@ class _InstructorMatchState extends State<InstructorMatch> {
       context: context,
       builder: (BuildContext context){
         return StatefulBuilder(
-          builder: (BuildContext context, setState){
-            return AlertDialog(
-            title: Container(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(5),
-                child: Image.network(
-                  studentPic[student],
-                  fit: BoxFit.cover,
-                  height: 150,
-                ),
-              ),
-            ),
-            content: GridView.count(
-              crossAxisCount: 3,
-              children: List.generate(
-                randomNames.length,
-                (index) {
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if(namePicked[randomNames[index]] == true && randomNames[index] != picked[studentName[student]].keys.first){
-                          HapticFeedback.selectionClick();
-                        }
-                        else{
-                          if(picked[studentName[student]].keys.first == ""){
-                            picked[studentName[student]] = {randomNames[index] : true};
-                            namePicked[randomNames[index]] = true;
+              builder: (BuildContext context, setState){
+                return AlertDialog(
+                  title: Container(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(5),
+                      child: Image.network(
+                        studentPic[student],
+                        fit: BoxFit.cover,
+                        height: 150,
+                      ),
+                    ),
+                  ),
+                  content: Container(
+                height: MediaQuery.of(context).size.height/2,
+                width: MediaQuery.of(context).size.width/2,
+                child: GridView.count(
+                      crossAxisCount: 3,
+                      children: List.generate(
+                          randomNames.length,
+                              (index) {
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  if(namePicked[randomNames[index]] == true && randomNames[index] != picked[studentName[student]].keys.first){
+                                    HapticFeedback.selectionClick();
+                                  }
+                                  else{
+                                    if(picked[studentName[student]].keys.first == ""){
+                                      picked[studentName[student]] = {randomNames[index] : true};
+                                      namePicked[randomNames[index]] = true;
+                                    }
+                                    else if(randomNames[index] == picked[studentName[student]].keys.first){
+                                      picked[studentName[student]] = {"" : false};
+                                      namePicked[randomNames[index]] = false;
+                                    }
+                                    else{
+                                      namePicked[picked[studentName[student]].keys.first] = false;
+                                      picked[studentName[student]] = {randomNames[index] : true};
+                                      namePicked[randomNames[index]] = true;
+                                    }
+                                  }
+                                });
+                              },
+                              child: Text(randomNames[index], style: TextStyle(color: !namePicked[randomNames[index]] ? Colors.black : Color(0xFF249e7e))),
+                            );
                           }
-                          else if(randomNames[index] == picked[studentName[student]].keys.first){
-                            picked[studentName[student]] = {"" : false};
-                            namePicked[randomNames[index]] = false;
-                          }
-                          else{
-                            namePicked[picked[studentName[student]].keys.first] = false;
-                            picked[studentName[student]] = {randomNames[index] : true};
-                            namePicked[randomNames[index]] = true;
-                          }
-                        }
-                      });
-                    },
-                    child: Text(randomNames[index], style: TextStyle(color: !namePicked[randomNames[index]] ? Colors.black : Color(0xFF249e7e))),
-                  );
-                }
-              )
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text("Done"),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ],
+                      )
+                  ),
+                  ),
+                  actions: <Widget>[
+                    FlatButton(
+                      child: Text("Done"),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                );
+              }
           );
-          }
-        );
       }
     );
   }

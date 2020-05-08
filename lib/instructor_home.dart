@@ -51,7 +51,9 @@ class _InstructorHomeState extends State<InstructorHome> {
   }
 
   void _deleteClass() async {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorRemoveCourse()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => InstructorRemoveCourse())).then((_){
+      _getClasses();
+      setState((){});});
   }
 
   showEditClassesDialog(BuildContext context) {
